@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  email String
+  image String?
+  shapes Shape[] // A user can have multiple shapes
+}
+
+model Shape {
+  id        Int      @id @default(autoincrement())
+  type      ShapeType 
+  userId    Int      
+  user      User     @relation(fields: [userId], references: [id])
+
+  rectangle Rectangle?
+  polygon   Polygon?  
+  circle    Circle?    
+  polyline  Polyline?  
+}
+
+enum ShapeType {
+  RECTANGLE
+  POLYGON
+  CIRCLE
+  POLYLINE
+}
+
+model Rectangle {
+  id      Int   @id @default(autoincrement())
+  shapeId Int   @unique 
+  shape   Shape @relation(fields: [shapeId], references: [id], onDelete: Cascade) 
+  bounds  Json  
+}
+
+model Polygon {
+  id      Int   @id @default(autoincrement())
+  shapeId Int   @unique 
+  shape   Shape @relation(fields: [shapeId], references: [id], onDelete: Cascade) 
+  coords  Json  
+}
+
+model Circle {
+  id      Int   @id @default(autoincrement())
+  shapeId Int   @unique 
+  shape   Shape @relation(fields: [shapeId], references: [id], onDelete: Cascade) 
+  center  Json  
+  radius  Float
+}
+
+model Polyline {
+  id      Int   @id @default(autoincrement())
+  shapeId Int   @unique 
+  shape   Shape @relation(fields: [shapeId], references: [id], onDelete: Cascade) 
+  coords  Json  
+}

@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Steps to Start the Project
 
-## Getting Started
+## 1. Install Prerequisites
 
-First, run the development server:
+    Make sure you have the following installed:
+
+    - [Node.js](https://nodejs.org/)
+    - [PostgreSQL](https://www.postgresql.org/) (or use an online PostgreSQL service)
+    - [Git](https://git-scm.com/)
+
+## 2. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+    git clone https://github.com/dev-satri/map.git
+    cd beautiful map
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 3.Install Project dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    `npm install`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 4. Set Up Environment Variables
 
-## Learn More
+Create a `.env` file in the root directory and add the following variables:
 
-To learn more about Next.js, take a look at the following resources:
+````env
+DATABASE_URL="postgresql://postgres:yourdbpass@localhost:5432/mydb?schema=public"
+NEXTAUTH_URL=http://localhost:3001
+NEXTAUTH_SECRET=your_secret_key_here
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+````
+
+## 5.Run prisma migration
+
+    npx prisma migrate dev --name init
+
+## 6.Start development server
+
+    npm run dev
