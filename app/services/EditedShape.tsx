@@ -88,7 +88,6 @@ const _editedDebounced = debounce(
             data: { email },
           }
         );
-        console.log("All existing shapes deleted successfully");
 
         if (shapesToCreate.length > 0) {
           await axios.post(
@@ -98,7 +97,6 @@ const _editedDebounced = debounce(
               shapes: shapesToCreate,
             }
           );
-          console.log("Shapes created successfully:", shapesToCreate);
         }
       }
     } catch (error) {

@@ -11,7 +11,7 @@ export const DetectClick: React.FC = () => {
   const { isDrawing } = useDrawing();
   useMapEvents({
     click: (e) => {
-      if (!isDrawing) {
+      if (!isDrawing.current) {
         const { lat, lng } = e.latlng;
         router.push(`?lat=${lat}&lng=${lng}`);
         setPosition([lat, lng]);

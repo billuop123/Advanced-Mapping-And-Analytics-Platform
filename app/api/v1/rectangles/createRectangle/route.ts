@@ -4,9 +4,7 @@ import { prisma } from "@/app/services/prismaClient";
 export async function POST(req: Request) {
   try {
     const { email, bounds, type } = await req.json();
-    console.log(email, bounds, type);
 
-    // Validate input
     if (!email || !bounds || !type) {
       return NextResponse.json(
         { error: "Email, bounds, and type are required" },
@@ -14,33 +12,37 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find the user by email
+    const roundedBounds = {
+      southwest: {
+        lat: parseFloat(bounds.southwest.lat.toFixed(15)),
+        lng: parseFloat(bounds.southwest.lng.toFixed(15)),
+      },
+      northeast: {
+        lat: parseFloat(bounds.northeast.lat.toFixed(15)),
+        lng: parseFloat(bounds.northeast.lng.toFixed(15)),
+      },
+    };
+
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.log("--------------");
-    console.log(user.id);
-
-    // Check if the rectangle already exists for the user
-
-    // Create a new shape with a rectangle
     const shape = await prisma.shape.create({
       data: {
         type: type,
-        userId: user.id, // Use the found user's ID
+        userId: user.id,
         rectangle: {
           create: {
-            bounds: bounds,
+            bounds: roundedBounds,
           },
         },
       },
       include: {
-        rectangle: true, // Include the rectangle in the response
+        rectangle: true,
       },
     });
 

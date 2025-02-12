@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import ClientProviders from "./Providers/ClientProvider";
-
+import "./globals.css";
 type RootLayoutProps = {
   children: ReactNode;
 };

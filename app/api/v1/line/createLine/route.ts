@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 
+// Function to round coordinates to 10 decimal places
+const roundTo10DecimalPlaces = (num) => {
+  return parseFloat(num.toFixed(10));
+};
+
 export async function POST(req: Request) {
   try {
     // Extract the email and coordinates from the request body
@@ -13,16 +18,20 @@ export async function POST(req: Request) {
       );
     }
 
+    // Round the coordinates to 10 decimal places
+    const roundedCoords = coords.map((coord) => ({
+      lat: roundTo10DecimalPlaces(coord.lat),
+      lng: roundTo10DecimalPlaces(coord.lng),
+    }));
+
     // Find the user by email
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-
-    // Check if the polyline already exists for the user
 
     // Create a new shape with a polyline
     const shape = await prisma.shape.create({
@@ -31,7 +40,7 @@ export async function POST(req: Request) {
         userId: user.id,
         polyline: {
           create: {
-            coords: coords, // Store the coordinates as JSON
+            coords: roundedCoords, // Store the rounded coordinates as JSON
           },
         },
       },

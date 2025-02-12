@@ -1,10 +1,9 @@
-// shapeActions.ts
 import axios from "axios";
 import L, { LatLngExpression } from "leaflet";
 
 export const _created = async (
   e: { layer: L.Layer },
-  email: string | undefined,
+  email: string | null,
   setShapes: React.Dispatch<React.SetStateAction<any>>
 ) => {
   const layer = e.layer;
@@ -83,5 +82,11 @@ export const _created = async (
     } catch (error) {
       console.error("Error saving polyline:", error);
     }
+  } else if (layer instanceof L.Marker) {
+    // Attach a popup to the marker
+    const marker = layer;
+    marker.bindPopup("This is a custom popup for the marker").openPopup();
+
+    // Save the marker to the state (if needed)
   }
 };

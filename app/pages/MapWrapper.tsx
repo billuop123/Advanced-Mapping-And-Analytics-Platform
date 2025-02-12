@@ -1,5 +1,5 @@
-import MapClient from "./MapClient";
+import MapDashboardContainer from "../components/MapContainer";
 
 export default function MapWrapper() {
-  return <MapClient />;
+  return <MapDashboardContainer />;
 }

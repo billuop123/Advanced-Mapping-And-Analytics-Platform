@@ -16,6 +16,7 @@ model User {
   email String
   image String?
   shapes Shape[] // A user can have multiple shapes
+  location Location[]
 }
 
 model Shape {
@@ -64,4 +65,15 @@ model Polyline {
   shapeId Int   @unique 
   shape   Shape @relation(fields: [shapeId], references: [id], onDelete: Cascade) 
   coords  Json  
+}
+model Location {
+  id        Int      @id @default(autoincrement())
+  userId Int
+   latitude  Float
+  longitude Float
+    description      String
+    type      String
+
+    user      User     @relation(fields: [userId], references: [id])
+
 }
