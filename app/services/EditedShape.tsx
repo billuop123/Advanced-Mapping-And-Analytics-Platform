@@ -9,7 +9,7 @@ const _editedDebounced = debounce(
     e: { layers: L.LayerGroup },
     isEditing: React.MutableRefObject<boolean>,
     mapRef: React.MutableRefObject<L.Map | null>,
-    email: string | undefined
+    email: string | null
   ) => {
     console.log("_editedDebounced function triggered");
 
@@ -37,9 +37,17 @@ const _editedDebounced = debounce(
         }
       });
 
+      // Get the edited layers from the event
+      const editedLayers = e.layers.getLayers();
+
+      // Filter out the edited layers from allLayers
+      const filteredLayers = allLayers.filter(
+        (layer) => !editedLayers.includes(layer)
+      );
+
       const shapesToCreate: any[] = [];
 
-      for (const layer of allLayers) {
+      for (const layer of filteredLayers) {
         console.log("Processing layer:", layer);
 
         if (layer instanceof L.Rectangle) {

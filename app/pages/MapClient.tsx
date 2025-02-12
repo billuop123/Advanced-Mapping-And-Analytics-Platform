@@ -150,6 +150,7 @@ export default function MapClient({ ref }) {
       }
     );
   };
+
   return (
     <MapContainer
       center={position}
@@ -204,7 +205,6 @@ export default function MapClient({ ref }) {
             />
           );
         })}
-
         {shapes.circles.map((circle, index) => {
           const radius = circle.radius;
           const center = circle.center;
@@ -247,7 +247,6 @@ export default function MapClient({ ref }) {
             />
           );
         })}
-
         {shapes.polylines.map((coords, index) => {
           return (
             <Polyline
@@ -403,6 +402,12 @@ export default function MapClient({ ref }) {
               setIsMarkerActive(true);
             }
             _created(e, email, setShapes);
+          }}
+          onDeleteStart={() => {
+            isDrawing.current = true;
+          }}
+          onDeleteStop={() => {
+            isDrawing.current = false;
           }}
           onEdited={editedDebounced}
         />
