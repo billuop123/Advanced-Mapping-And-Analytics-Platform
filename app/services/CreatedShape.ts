@@ -1,9 +1,15 @@
 import axios from "axios";
-import L, { LatLngExpression } from "leaflet";
+import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+type ShapesState = {
+  polygons: LatLngExpression[][];
+  circles: { center: LatLng; radius: number }[];
+  polylines: LatLngExpression[][];
+  rectangles: LatLngBounds[];
+};
 
 export const _created = async (
   e: { layer: L.Layer },
-  email: string | null,
+  email: string | null | undefined,
   setShapes: React.Dispatch<React.SetStateAction<any>>
 ) => {
   const layer = e.layer;
@@ -28,7 +34,7 @@ export const _created = async (
           type: "RECTANGLE",
         }
       );
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         rectangles: [...prevShapes.rectangles, bounds],
       }));
@@ -37,15 +43,16 @@ export const _created = async (
     }
   } else if (layer instanceof L.Polygon) {
     const coords = layer.getLatLngs() as LatLngExpression[];
+    console.log(coords);
     try {
       await axios.post("http://localhost:3001/api/v1/polygons/createPolygon", {
         email,
         coords: coords,
         type: "POLYGON",
       });
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
-        polygons: [...prevShapes.polygons, coords],
+        polygons: [...prevShapes.polygons, ...coords],
       }));
     } catch (error) {
       console.error("Error saving polygon:", error);
@@ -60,7 +67,7 @@ export const _created = async (
         radius: radius,
         type: "CIRCLE",
       });
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         circles: [...prevShapes.circles, { center, radius }],
       }));
@@ -75,7 +82,7 @@ export const _created = async (
         coords: coords,
         type: "POLYLINE",
       });
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         polylines: [...prevShapes.polylines, coords],
       }));

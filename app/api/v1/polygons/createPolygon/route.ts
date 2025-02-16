@@ -14,13 +14,13 @@ export async function POST(req: Request) {
     }
 
     // Round the coordinates to 15 decimal places
-    const roundedCoords = coords.map((polygon) =>
+    let roundedCoords = coords.map((polygon) =>
       polygon.map((point) => ({
         lat: parseFloat(point.lat.toFixed(15)),
         lng: parseFloat(point.lng.toFixed(15)),
       }))
     );
-
+    roundedCoords = roundedCoords.flat();
     // Find the user by email
     const user = await prisma.user.findFirst({
       where: { email: email },

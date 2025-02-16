@@ -1,9 +1,5 @@
 import axios from "axios";
-
-interface LatLng {
-  lat: number;
-  lng: number;
-}
+import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 
 interface ShapesState {
   circles: { center: LatLng; radius: number }[];
@@ -15,9 +11,9 @@ interface ShapesState {
 type SetShapes = React.Dispatch<React.SetStateAction<ShapesState>>;
 
 export const handleDeleteCircle = async (
-  center: LatLng,
+  center: LatLngExpression,
   radius: number,
-  email: string,
+  email: string | null | undefined,
   setShapes: SetShapes
 ) => {
   try {
@@ -32,7 +28,7 @@ export const handleDeleteCircle = async (
 
     if (response.status === 200) {
       console.log("Circle deleted successfully:", response.data.message);
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         circles: prevShapes.circles.filter(
           (circle) =>
@@ -57,44 +53,80 @@ export const handleDeleteCircle = async (
 };
 
 export const handleDeletePolygon = async (
-  coords: LatLng[][],
+  coords:
+    | LatLngExpression[]
+    | { lat: number; lng: number }[]
+    | LatLng[][]
+    | { lat: number; lng: number }[][],
   setShapes: SetShapes,
   shapes: ShapesState,
-  email: string
+  email: string | null | undefined
 ) => {
-  const compareCoordinates = (coord1: any, coord2: LatLng) => {
-    console.log(coord1, coord2);
-    const match = coord1.find((item: any) => item === coord2);
-    return match;
+  console.log("Original coords:", coords);
+
+  let normalizedCoords: { lat: number; lng: number }[];
+
+  if (
+    Array.isArray(coords[0]) &&
+    (coords[0] instanceof LatLng || typeof coords[0][0] === "object")
+  ) {
+    normalizedCoords = (coords as (LatLng | { lat: number; lng: number })[])
+      .flat()
+      .map((point) =>
+        point instanceof LatLng
+          ? { lat: point.lat, lng: point.lng }
+          : { lat: point.lat, lng: point.lng }
+      );
+  } else {
+    normalizedCoords = (
+      coords as (LatLng | { lat: number; lng: number })[]
+    ).map((point) =>
+      point instanceof LatLng
+        ? { lat: point.lat, lng: point.lng }
+        : { lat: point.lat, lng: point.lng }
+    );
+  }
+
+  console.log("Normalized coords:", normalizedCoords);
+
+  const compareCoordinates = (
+    coord1: { lat: number; lng: number },
+    coord2: { lat: number; lng: number }
+  ) => {
+    console.log("Comparing:", coord1, coord2);
+    return coord1.lat === coord2.lat && coord1.lng === coord2.lng;
   };
 
   const polygonExists = shapes.polygons.some((polygon) => {
     return polygon.every((point, index) => {
-      return compareCoordinates(point, coords[0][index]);
+      return compareCoordinates(point, normalizedCoords[index]);
     });
   });
-
+  console.log(polygonExists);
   if (!polygonExists) {
     console.error("No matching polygon found for deletion.");
     return;
   }
 
   try {
+    // Send a request to delete the polygon
     const response = await axios.post(
       "http://localhost:3001/api/v1/polygons/deleteSinglePolygon",
       {
         email,
-        coords,
+        coords: normalizedCoords, // Use normalized coordinates
       }
     );
 
     if (response.status === 200) {
       console.log("Polygon deleted successfully:", response.data.message);
-      setShapes((prevShapes) => ({
+
+      // Update the state by removing the deleted polygon
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         polygons: prevShapes.polygons.filter((polygon) => {
           return !polygon.every((point, index) => {
-            return compareCoordinates(point, coords[0][index]);
+            return compareCoordinates(point, normalizedCoords[index]);
           });
         }),
       }));
@@ -112,10 +144,9 @@ export const handleDeletePolygon = async (
     }
   }
 };
-
 export const handleDeleteLine = async (
-  coords: LatLng[],
-  email: string,
+  coords: LatLngExpression[],
+  email: string | null | undefined,
   setShapes: SetShapes
 ) => {
   console.log(coords); // Log the coordinates for debugging
@@ -128,7 +159,7 @@ export const handleDeleteLine = async (
 
     if (response.status === 200) {
       console.log("Polyline deleted successfully:", response.data.message);
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         polylines: prevShapes.polylines.filter(
           (line) => JSON.stringify(line) !== JSON.stringify(coords)
@@ -150,8 +181,8 @@ export const handleDeleteLine = async (
 };
 
 export const handleDeleteRectangle = async (
-  bounds: LatLng[],
-  email: string,
+  bounds: LatLngBounds,
+  email: string | null | undefined,
   setShapes: SetShapes
 ) => {
   console.log(bounds);
@@ -164,7 +195,7 @@ export const handleDeleteRectangle = async (
 
     if (response.status === 200) {
       console.log("Rectangle deleted successfully:", response.data.message);
-      setShapes((prevShapes) => ({
+      setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         rectangles: prevShapes.rectangles.filter(
           (rectangle) => JSON.stringify(rectangle) !== JSON.stringify(bounds)

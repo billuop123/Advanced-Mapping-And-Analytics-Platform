@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import L, { LatLngBounds, LatLngExpression } from "leaflet";
+import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 import { useSession } from "next-auth/react";
 
-type ShapesState = {
+export type ShapesState = {
   polygons: LatLngExpression[][];
-  circles: { center: LatLngExpression; radius: number }[];
+  circles: { center: LatLng; radius: number }[];
   polylines: LatLngExpression[][];
   rectangles: LatLngBounds[];
 };
@@ -84,6 +84,8 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     fetchShapes();
   }, [email]);
+
+  // Updated shapesAreEqual function
 
   return (
     <ShapeContext.Provider value={{ shapes, setShapes }}>

@@ -1,5 +1,7 @@
+import { LatLngExpression } from "leaflet";
+
 export const calculatePolygonArea = (
-  coords: { lat: number; lng: number }[][]
+  coords: { lat: number; lng: number }[][] | LatLngExpression[]
 ) => {
   const flattenedCoords = coords.flat();
 
@@ -11,8 +13,8 @@ export const calculatePolygonArea = (
     const latLng2 = flattenedCoords[(i + 1) % n];
 
     area +=
-      (latLng2.lng - latLng1.lng) *
-      (latLng1.lat + latLng2.lat) *
+      (latLng2!.lng - latLng1!.lng) *
+      (latLng1!.lat + latLng2!.lat) *
       (Math.PI / 180) *
       6378137 *
       6378137;
