@@ -1,0 +1,400 @@
+"use client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import axios from "axios";
+import { Loader2, MoreHorizontal } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { MdDelete } from "react-icons/md";
+import { useRole } from "../contexts/RoleContext";
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  image: string;
+  role: string;
+}
+
+interface PendingChange {
+  userId: number;
+  newRole: string;
+}
+
+export default function AdminDashboard() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pendingChanges, setPendingChanges] = useState<PendingChange[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [saving, setSaving] = useState(false);
+  const { role } = useRole();
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (!role) return;
+    if (role != "admin") {
+      window.location.href = "/";
+    }
+  }, [role, router]);
+
+  async function fetchUsers() {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get(
+        `http://localhost:3001/api/v1/user/allusers`
+      );
+      setUsers(response.data.users);
+    } catch (err) {
+      setError("Failed to fetch users. Please try again later.");
+      console.error("Error fetching users:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleRoleChange = (userId: number, newRole: string) => {
+    setPendingChanges((prev) => {
+      const filtered = prev.filter((change) => change.userId !== userId);
+      if (users.find((u) => u.id === userId)?.role !== newRole) {
+        return [...filtered, { userId, newRole }];
+      }
+      return filtered;
+    });
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      setError(null);
+      await axios.post(`http://localhost:3001/api/v1/user/userDelete`, {
+        id: userId,
+      });
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      setPendingChanges((prev) =>
+        prev.filter((change) => change.userId !== userId)
+      );
+    } catch (err) {
+      setError(`Failed to delete ${users.find((u) => u.id === userId)?.name}`);
+      console.error("Failed to delete user:", err);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (pendingChanges.length === 0) return;
+
+    try {
+      setSaving(true);
+      setError(null);
+
+      await Promise.all(
+        pendingChanges.map(({ userId, newRole }) =>
+          axios.patch(
+            `http://localhost:3001/api/v1/user/userUpdateRole/${userId}`,
+            {
+              role: newRole,
+            }
+          )
+        )
+      );
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) => {
+          const change = pendingChanges.find((c) => c.userId === user.id);
+          return change ? { ...user, role: change.newRole } : user;
+        })
+      );
+
+      setPendingChanges([]);
+    } catch (err) {
+      setError("Failed to save changes. Please try again.");
+      console.error("Failed to save changes:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const columns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => {
+        const user = row.original;
+        return (
+          <div className="flex items-center gap-4">
+            <div className="relative h-10 w-10">
+              <Image
+                src={user.image}
+                alt={user.name}
+                fill
+                className="rounded-full object-cover"
+              />
+            </div>
+            <span>{user.name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        const user = row.original;
+        const pendingRole = pendingChanges.find(
+          (change) => change.userId === user.id
+        )?.newRole;
+
+        return (
+          <Select
+            key={user.id}
+            value={pendingRole || user.role}
+            onValueChange={(value) => handleRoleChange(user.id, value)}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder={pendingRole || user.role} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="editor">Editor</SelectItem>
+              <SelectItem value="viewer">Viewer</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const user = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={() => handleDeleteUser(user.id)}
+              >
+                <MdDelete />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  const table = useReactTable({
+    data: users,
+    columns,
+    state: {
+      sorting,
+      columnFilters,
+    },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Button
+            onClick={handleSaveChanges}
+            disabled={saving || pendingChanges.length === 0}
+          >
+            {saving ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Saving...</span>
+              </div>
+            ) : (
+              `Save Changes (${pendingChanges.length})`
+            )}
+          </Button>
+        </div>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-4 flex gap-4">
+            <Input
+              placeholder="Filter by name..."
+              value={
+                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("name")?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
+            <Select
+              value={
+                (table.getColumn("role")?.getFilterValue() as string) ?? ""
+              }
+              onValueChange={(value) =>
+                table
+                  .getColumn("role")
+                  ?.setFilterValue(value === "all" ? undefined : value)
+              }
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Filter by role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="editor">Editor</SelectItem>
+                <SelectItem value="viewer">Viewer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    onClick={() =>
+                      router.push(`/admindashboard/${row.original.id}`)
+                    } // Add onClick handler
+                    className={
+                      pendingChanges.some(
+                        (change) => change.userId === row.original.id
+                      )
+                        ? "bg-blue-50 cursor-pointer"
+                        : "cursor-pointer"
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          <div className="flex items-center justify-end space-x-2 p-4">
+            <div className="flex-1 text-sm text-gray-500">
+              {table.getFilteredRowModel().rows.length} user(s)
+            </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

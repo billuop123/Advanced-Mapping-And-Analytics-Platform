@@ -3,32 +3,30 @@ import { prisma } from "@/app/services/prismaClient";
 
 export async function POST(req: Request) {
   try {
-    // Extract the email from the request body
     const { email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
-
+    // Find the user
+    const user = await prisma.user.findFirst({ where: { email } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Fetch all rectangles associated with the user
+    // Get all admins
+    const admins = await prisma.user.findMany({ where: { role: "admin" } });
+    const adminIds = admins.map((admin) => admin.id);
+
+    // Fetch rectangles for user and admins
     const rectangles = await prisma.rectangle.findMany({
       where: {
         shape: {
-          userId: user.id,
+          userId: { in: [...adminIds, user.id] },
         },
       },
-      include: {
-        shape: true, // Include the associated shape
-      },
+      include: { shape: true },
     });
 
     return NextResponse.json(rectangles, { status: 200 });

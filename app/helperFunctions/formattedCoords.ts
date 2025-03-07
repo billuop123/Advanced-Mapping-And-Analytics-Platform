@@ -6,8 +6,11 @@ import L from "leaflet";
  * @returns A formatted string representing the southwest and northeast corners.
  */
 export const formatCoordinatesRectangle = (coords: L.LatLngBounds): string => {
+  //@ts-ignore
   if (coords && coords._southWest && coords._northEast) {
+    //@ts-ignore
     const { lat: lat1, lng: lng1 } = coords._southWest;
+    //@ts-ignore
     const { lat: lat2, lng: lng2 } = coords._northEast;
     return `SouthWest: Lat: ${lat1.toFixed(4)}, Lng: ${lng1.toFixed(
       4

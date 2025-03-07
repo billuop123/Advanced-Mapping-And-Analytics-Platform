@@ -4,13 +4,15 @@ import L from "leaflet";
 import { debounce } from "lodash";
 import { useRef } from "react";
 import { useUser } from "../contexts/LoginContext";
+import { useShapes } from "../contexts/shapeContext";
 
 const _editedDebounced = debounce(
   async (
     e: { layers: L.LayerGroup },
     isEditing: React.MutableRefObject<boolean>,
     mapRef: React.MutableRefObject<L.Map | null>,
-    email: string | null | undefined
+    email: string | null | undefined,
+    setShapes
   ) => {
     if (isEditing.current) {
       console.log(
@@ -97,7 +99,7 @@ const _editedDebounced = debounce(
       for (const layer of allLayers) {
         console.log("Processing layer:", layer);
 
-        // Capture the new state of edited layers
+        // Capture the new state of edited
         if (editedLayerIds.has(layer._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name
@@ -207,6 +209,47 @@ const _editedDebounced = debounce(
       }
 
       console.log("Shapes to Create:", shapesToCreate);
+      const newShapes = {
+        polygons: shapesToCreate
+
+          .filter((shape) => shape.type === "POLYGON")
+
+          .map((shape) => shape.data.coords),
+
+        circles: shapesToCreate
+
+          .filter((shape) => shape.type === "CIRCLE")
+
+          .map((shape) => ({
+            center: { lat: shape.data.center.lat, lng: shape.data.center.lng },
+
+            radius: shape.data.radius,
+          })),
+
+        polylines: shapesToCreate
+
+          .filter((shape) => shape.type === "POLYLINE")
+
+          .map((shape) => shape.data.coords),
+
+        rectangles: shapesToCreate
+
+          .filter((shape) => shape.type === "RECTANGLE")
+
+          .map((shape) =>
+            L.latLngBounds(
+              [
+                shape.data.bounds.southwest.lat,
+
+                shape.data.bounds.southwest.lng,
+              ],
+
+              [shape.data.bounds.northeast.lat, shape.data.bounds.northeast.lng]
+            )
+          ),
+      };
+
+      setShapes(newShapes);
 
       if (email) {
         // Delete all existing shapes
@@ -265,8 +308,8 @@ export const useEditedDebounced = (
 ) => {
   const isEditing = useRef(false);
   const { email } = useUser();
-
+  const { setShapes } = useShapes();
   return (e: { layers: L.LayerGroup }) => {
-    _editedDebounced(e, isEditing, mapRef, email);
+    _editedDebounced(e, isEditing, mapRef, email, setShapes);
   };
 };

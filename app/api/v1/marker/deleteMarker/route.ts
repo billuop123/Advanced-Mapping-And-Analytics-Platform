@@ -34,10 +34,7 @@ export async function POST(req: Request) {
     });
 
     if (!location) {
-      return NextResponse.json(
-        { error: "Location not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Location not found" });
     }
 
     await prisma.location.delete({
@@ -49,10 +46,6 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting marker:", error);
-    return NextResponse.json(
-      { error: "Failed to delete marker" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete marker" });
   }
 }

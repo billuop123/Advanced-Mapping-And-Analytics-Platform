@@ -64,10 +64,9 @@ export async function POST(req: Request) {
     });
 
     if (!rectangle) {
-      return NextResponse.json(
-        { error: "Rectangle with the specified bounds not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({
+        error: "Rectangle with the specified bounds not found",
+      });
     }
 
     // Delete the specific rectangle
@@ -82,10 +81,8 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error deleting rectangle:", error);
-    return NextResponse.json(
-      { error: "Failed to delete rectangle", details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      details: error.message,
+    });
   }
 }

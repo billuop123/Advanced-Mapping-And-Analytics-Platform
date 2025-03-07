@@ -17,10 +17,11 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-
+    const admins = await prisma.user.findMany({ where: { role: "admin" } });
+    const adminIds = admins.map((admin) => admin.id);
     const markers = await prisma.location.findMany({
       where: {
-        userId: user.id,
+        userId: { in: [...adminIds, user.id] },
       },
     });
 

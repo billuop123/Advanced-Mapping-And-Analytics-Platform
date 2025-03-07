@@ -32,18 +32,12 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     if (!body) {
-      return NextResponse.json(
-        { error: "Request body is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Request body is required" });
     }
 
     const { email, coords } = body;
     if (!email || !coords) {
-      return NextResponse.json(
-        { error: "Email and coordinates are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Email and coordinates are required" });
     }
 
     // Normalize coords to ensure it's a flat array of objects
@@ -61,7 +55,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" });
     }
 
     // Find all polygons for the user
@@ -98,7 +92,7 @@ export async function POST(req: Request) {
     });
 
     if (!polygon) {
-      return NextResponse.json({ error: "Polygon not found" }, { status: 404 });
+      return NextResponse.json({ error: "Polygon not found" });
     }
 
     // Delete the polygon
@@ -113,10 +107,8 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error deleting polygon:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to delete polygon" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      error: error.message || "Failed to delete polygon",
+    });
   }
 }

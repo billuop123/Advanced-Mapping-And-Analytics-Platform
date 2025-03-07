@@ -3,7 +3,6 @@ import { prisma } from "@/app/services/prismaClient"; // Adjust the import based
 
 export async function POST(req: Request) {
   try {
-    // Parse the request body
     const body = await req.json();
     const { email, shape } = body;
 
@@ -16,7 +15,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Find the user by email
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
@@ -25,7 +23,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "User  not found" }, { status: 404 });
     }
 
-    // Prepare the center coordinates with toFixed(15)
     let center;
     if (shape.type === "CIRCLE") {
       center = {
@@ -34,7 +31,6 @@ export async function POST(req: Request) {
       };
     }
 
-    // Find the shape to delete based on type and data
     let shapeToDelete;
 
     switch (shape.type) {

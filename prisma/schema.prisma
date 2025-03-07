@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 
 generator client {
   provider = "prisma-client-js"
@@ -12,23 +11,29 @@ datasource db {
 
 model User {
   id    Int     @id @default(autoincrement())
-  name  String  @unique
-  email String
-  image String?
-  shapes Shape[] // A user can have multiple shapes
+  name  String  
+  email String @unique
+  image String? @default("/default.svg")
+  password String?
+  shapes Shape[] 
   location Location[]
+  role Role @default(viewer) 
 }
-
+enum Role{
+  viewer
+  editor
+  admin
+}
 model Shape {
   id        Int      @id @default(autoincrement())
   type      ShapeType 
   userId    Int      
-  user      User     @relation(fields: [userId], references: [id])
-
+  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   rectangle Rectangle?
   polygon   Polygon?  
   circle    Circle?    
   polyline  Polyline?  
+  date      DateTime @default(now())
 }
 
 enum ShapeType {
@@ -71,9 +76,9 @@ model Location {
   userId Int
    latitude  Float
   longitude Float
-    description      String
-    type      String
+  description      String
+  type      String
 
-    user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
 
 }

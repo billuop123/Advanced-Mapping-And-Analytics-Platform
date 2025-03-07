@@ -1,18 +1,15 @@
 import React, { createContext, ReactNode, useContext, useRef } from "react";
 
-// Define the context type correctly
 type DrawingContextType = {
   isDrawing: React.RefObject<boolean>;
 };
 
-// Create the context
 const DrawingContext = createContext<DrawingContextType | undefined>(undefined);
 
-// Create a provider component
 export const DrawingProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const isDrawing = useRef(false); // useRef to persist state without re-renders
+  const isDrawing = useRef(false);
 
   return (
     <DrawingContext.Provider value={{ isDrawing }}>
@@ -21,7 +18,6 @@ export const DrawingProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-// Custom hook to use the DrawingContext
 export const useDrawing = () => {
   const context = useContext(DrawingContext);
   if (!context) {

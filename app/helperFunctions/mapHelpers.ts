@@ -5,7 +5,7 @@ interface ShapesState {
   circles: { center: LatLng; radius: number }[];
   polygons: LatLng[][];
   polylines: LatLng[][];
-  rectangles: LatLng[][];
+  rectangles: LatLngBounds[]; // Use LatLngBounds instead of LatLng[][]
 }
 
 type SetShapes = React.Dispatch<React.SetStateAction<ShapesState>>;
@@ -32,22 +32,24 @@ export const handleDeleteCircle = async (
         ...prevShapes,
         circles: prevShapes.circles.filter(
           (circle) =>
+            //@ts-ignore
             circle.center.lat !== center.lat ||
+            //@ts-ignore
             circle.center.lng !== center.lng ||
             circle.radius !== radius
         ),
       }));
     } else {
-      console.error("Failed to delete circle:", response.data.error);
+      console.log("Failed to delete circle:", response.data.error);
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(
+      console.log(
         "Error deleting circle:",
         error.response?.data?.error || error.message
       );
     } else {
-      console.error("Unexpected error:", error);
+      console.log("Unexpected error:", error);
     }
   }
 };
@@ -104,7 +106,7 @@ export const handleDeletePolygon = async (
   });
   console.log(polygonExists);
   if (!polygonExists) {
-    console.error("No matching polygon found for deletion.");
+    console.log("No matching polygon found for deletion.");
     return;
   }
 
@@ -131,16 +133,16 @@ export const handleDeletePolygon = async (
         }),
       }));
     } else {
-      console.error("Failed to delete polygon:", response.data.error);
+      console.log("Failed to delete polygon:", response.data.error);
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(
+      console.log(
         "Error deleting polygon:",
         error.response?.data?.error || error.message
       );
     } else {
-      console.error("Unexpected error:", error);
+      console.log("Unexpected error:", error);
     }
   }
 };
@@ -166,16 +168,16 @@ export const handleDeleteLine = async (
         ),
       }));
     } else {
-      console.error("Failed to delete polyline:", response.data.error);
+      console.log("Failed to delete polyline:", response.data.error);
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error(
+      console.log(
         "Error deleting polyline:",
         error.response?.data?.error || error.message
       );
     } else {
-      console.error("Unexpected error:", error);
+      console.log("Unexpected error:", error);
     }
   }
 };
@@ -202,13 +204,13 @@ export const handleDeleteRectangle = async (
         ),
       }));
     } else {
-      console.error("Failed to delete rectangle:", response.data.error);
+      console.log("Failed to delete rectangle:", response.data.error);
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error("Failed to delete rectangle:", error.response?.data?.error);
+      console.log("Failed to delete rectangle:", error.response?.data?.error);
     } else {
-      console.error("Unexpected error:", error);
+      console.log("Unexpected error:", error);
     }
   }
 };

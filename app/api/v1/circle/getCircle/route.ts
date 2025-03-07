@@ -3,38 +3,50 @@ import { prisma } from "@/app/services/prismaClient";
 
 export async function POST(req: Request) {
   try {
-    // Extract the email from the request body
     const { email } = await req.json();
-    console.log(email);
-
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
-
+    // Find user
+    const user = await prisma.user.findFirst({ where: { email } });
     if (!user) {
-      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Fetch all circles associated with the user
-    const circles = await prisma.circle.findMany({
+    // Find all admins
+    const admins = await prisma.user.findMany({ where: { role: "admin" } });
+    const adminIds = admins.map((admin) => admin.id);
+
+    // Fetch admin circles (✅ Fixed)
+    const adminCircles = await prisma.circle.findMany({
+      where: {
+        shape: {
+          userId: { in: adminIds }, // ✅ Correct filtering
+        },
+      },
+      include: { shape: true },
+    });
+
+    // Fetch user circles
+    const userCircles = await prisma.circle.findMany({
       where: {
         shape: {
           userId: user.id,
         },
       },
-      include: {
-        shape: true, // Include the associated shape data
-      },
+      include: { shape: true },
     });
 
-    // Map the circles to the expected format
-    const formattedCircles = circles.map((circle) => ({
-      center: circle.center, // Assuming center is already in the correct format
+    // Merge and remove duplicates
+    const allCircles = [...userCircles, ...adminCircles];
+    const uniqueCircles = Array.from(
+      new Map(allCircles.map((c) => [c.id, c])).values()
+    );
+
+    // Format response
+    const formattedCircles = uniqueCircles.map((circle) => ({
+      center: circle.center,
       radius: circle.radius,
     }));
 

@@ -4,17 +4,19 @@ import { usePosition } from "../contexts/PositionContext";
 import axios from "axios";
 import { FaWindowMinimize } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
-import UserInfo from "./UserInfo"; // Import UserInfo
+import UserInfo from "./UserInfo";
 import { useUser } from "../contexts/LoginContext";
+import { useRole } from "../contexts/RoleContext";
+import Link from "next/link";
 
 const Dashboard = () => {
   const [type, setType] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const { addLocation } = useLocationContext();
   const { setPosition, position } = usePosition();
-  const [showDashboard, setShowDashboard] = useState<boolean>(true); // Toggle dashboard visibility
+  const [showDashboard, setShowDashboard] = useState<boolean>(true);
   const { email } = useUser();
-  console.log(email);
+  const { role } = useRole();
   const typeOptions = [
     { id: 1, name: "Hospital" },
     { id: 2, name: "Temple" },
@@ -40,13 +42,11 @@ const Dashboard = () => {
       addLocation(newLocation);
     } catch (error) {
       console.error("Error creating marker:", error);
-      // Handle error (e.g., show a notification to the user)
     }
   };
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
-        {/* Toggle Dashboard Visibility */}
         <button
           onClick={() => setShowDashboard(!showDashboard)}
           className="w-full flex justify-center items-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
@@ -57,7 +57,11 @@ const Dashboard = () => {
             <IoMdAdd className="text-lg" />
           )}
         </button>
-
+        {role === "admin" ? (
+          <Link href="/admindashboard">Admin Dashboard</Link>
+        ) : (
+          ""
+        )}
         {showDashboard && (
           <>
             <h1 className="text-2xl font-bold text-blue-800 text-center mb-4">
@@ -65,7 +69,6 @@ const Dashboard = () => {
             </h1>
 
             <form onSubmit={handleSubmit} className="space-y-2">
-              {/* Latitude Input */}
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-1">
                   Latitude
@@ -82,7 +85,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Longitude Input */}
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-1">
                   Longitude
@@ -99,7 +101,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Type Select */}
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-1">
                   Type
@@ -121,7 +122,6 @@ const Dashboard = () => {
                 </select>
               </div>
 
-              {/* Description Textarea */}
               <div>
                 <label className="block text-gray-700 text-sm font-semibold mb-1">
                   Description
@@ -136,16 +136,15 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
+                disabled={role === "viewer"}
                 className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Submit
               </button>
             </form>
 
-            {/* User Info Section */}
             <div className="mt-4">
               <UserInfo />
             </div>

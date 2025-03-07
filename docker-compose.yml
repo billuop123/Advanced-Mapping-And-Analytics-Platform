@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+
+  user_app:
+    build:
+      context: "./"
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:mrcool10@postgres:5432/somedb?schema=public
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres

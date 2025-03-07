@@ -3,38 +3,35 @@ import { prisma } from "@/app/services/prismaClient";
 
 export async function POST(req: Request) {
   try {
-    // Extract the email from the request body
     const { email } = await req.json();
-    console.log(email);
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
-
+    // Find the user
+    const user = await prisma.user.findFirst({ where: { email } });
     if (!user) {
-      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Fetch all polygons associated with the user
+    // Get all admins
+    const admins = await prisma.user.findMany({ where: { role: "admin" } });
+    const adminIds = admins.map((admin) => admin.id);
+
+    // Fetch polygons for user and admins
     const polygons = await prisma.polygon.findMany({
       where: {
         shape: {
-          userId: user.id,
+          userId: { in: [...adminIds, user.id] },
         },
       },
-      include: {
-        shape: true, // Include the associated shape data
-      },
+      include: { shape: true },
     });
 
-    // Map the polygons to return only the coordinates
+    // Format response
     const formattedPolygons = polygons.map((polygon) => ({
-      coords: polygon.coords, // Assuming coords is already in the correct format
+      coords: polygon.coords,
     }));
 
     return NextResponse.json(formattedPolygons, { status: 200 });

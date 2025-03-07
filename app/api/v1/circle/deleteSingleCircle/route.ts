@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+      return NextResponse.json({ error: "User  not found" });
     }
 
     // Find the circle based on center, radius, and user ID
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         radius,
         userId: user.id,
       });
-      return NextResponse.json({ error: "Circle not found" }, { status: 404 });
+      return NextResponse.json({ error: "Circle not found" });
     }
 
     // Delete the circle

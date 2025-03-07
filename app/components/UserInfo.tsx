@@ -6,11 +6,10 @@ import { BsThreeDots } from "react-icons/bs";
 
 const UserProfile = () => {
   const { email, photoUrl, name } = useUser();
-  const [showLogout, setShowLogout] = useState(false); // State to toggle logout button visibility
+  const [showLogout, setShowLogout] = useState(false);
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 mt-6">
-      {/* User Profile Image */}
       {photoUrl && (
         <Image
           src={photoUrl}
@@ -21,24 +20,20 @@ const UserProfile = () => {
         />
       )}
 
-      {/* User Info and Three Dots Icon (Horizontally Aligned) */}
       <div className="flex justify-between items-center">
-        {/* User Info */}
         <div className="text-left">
           <p className="text-lg font-semibold">{name}</p>
           <p className="text-sm text-gray-600">{email}</p>
         </div>
 
-        {/* Three Dots Icon */}
         <button
-          onClick={() => setShowLogout(!showLogout)} // Toggle logout button visibility
+          onClick={() => setShowLogout(!showLogout)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <BsThreeDots className="text-gray-600" />
         </button>
       </div>
 
-      {/* Logout Button (Conditionally Rendered) */}
       {showLogout && (
         <button
           onClick={() => signOut()}

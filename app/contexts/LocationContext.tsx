@@ -14,16 +14,21 @@ interface Location {
 interface LocationContextType {
   allLocationArray: Location[];
   addLocation: (location: Location) => void;
-  fetchMarkers: (email: string) => Promise<void>; // Add a function to fetch markers
-  loading: boolean; // Add a loading state
-  error: string | null; // Add an error state
+  fetchMarkers: (email: string) => Promise<void>; // Function to fetch markers
+  loading: boolean; // Loading state
+  error: string | null; // Error state
   setAllLocationArray: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
-// Create the context
-const LocationContext = createContext<LocationContextType | undefined>(
-  undefined
-);
+// Create the context with a default value
+const LocationContext = createContext<LocationContextType>({
+  allLocationArray: [],
+  addLocation: () => {},
+  fetchMarkers: async () => {},
+  setAllLocationArray: () => {},
+  loading: false,
+  error: null,
+});
 
 // Custom hook to use the context
 export const useLocationContext = () => {
@@ -51,6 +56,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
     setAllLocationArray((prev) => [...prev, location]);
   };
 
+  // Function to fetch markers
   const fetchMarkers = async (email: string) => {
     setLoading(true);
     setError(null);
@@ -62,17 +68,21 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
         throw new Error("Failed to fetch markers");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching markers"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Optionally, you can fetch markers when the component mounts
+  // Fetch markers when the component mounts or when the email changes
   useEffect(() => {
-    if (!email) return;
-    // Replace with the actual email or get it from somewhere
-    fetchMarkers(email);
+    if (email) {
+      fetchMarkers(email);
+    }
   }, [email]);
 
   return (

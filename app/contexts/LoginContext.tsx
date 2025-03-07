@@ -7,6 +7,7 @@ interface UserContextType {
   photoUrl: string | undefined | null;
   name: string | undefined | null;
   status: string | undefined | null;
+  id: number;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -18,6 +19,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const email = data?.user?.email;
   const photoUrl = data?.user?.image;
   const name = data?.user?.name;
+  console.log(data);
   return (
     <UserContext.Provider value={{ email, photoUrl, name, status }}>
       {children}

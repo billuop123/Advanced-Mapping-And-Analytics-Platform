@@ -7,6 +7,7 @@ import { UserProvider } from "../contexts/LoginContext";
 import { PositionProvider } from "../contexts/PositionContext";
 import { DrawingProvider } from "../contexts/IsDrawingContext";
 import { LocationProvider } from "../contexts/LocationContext";
+import { RoleProvider } from "../contexts/RoleContext";
 
 type ClientProvidersProps = {
   children: ReactNode;
@@ -19,7 +20,9 @@ export default function ClientProviders({ children }: ClientProvidersProps) {
         <PositionProvider>
           <DrawingProvider>
             <UserProvider>
-              <LocationProvider>{children} </LocationProvider>
+              <RoleProvider>
+                <LocationProvider>{children} </LocationProvider>
+              </RoleProvider>
             </UserProvider>
           </DrawingProvider>
         </PositionProvider>
