@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-
+import jwt from "jsonwebtoken"
 const options: NextAuthOptions = {
   debug: true,
   providers: [
@@ -61,7 +61,9 @@ const options: NextAuthOptions = {
           const user = await prisma.user.findFirst({
             where: { email },
           });
-
+          const jwtT=jwt.sign({
+            userId:user?.id
+          },"secret")
           if (!user) {
             throw new Error("User not found");
           }
@@ -81,6 +83,7 @@ const options: NextAuthOptions = {
             id: user.id.toString(), // Convert id to string
             name: user.name,
             email: user.email,
+            accessToken:jwtT
           };
         }
       },
@@ -91,6 +94,7 @@ const options: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.accessToken=user.accessToken
       }
       return token;
     },
@@ -101,6 +105,7 @@ const options: NextAuthOptions = {
           ...session.user,
           //@ts-ignore
           id: token.id as string,
+          accessToken:token.accessToken as string
         };
       }
       return session;

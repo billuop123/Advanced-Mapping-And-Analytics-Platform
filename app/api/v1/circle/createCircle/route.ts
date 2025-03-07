@@ -1,11 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 
+import { getServerSession } from "next-auth";
+
 export async function POST(req: Request) {
   try {
     // Extract the email, center, radius, and type from the request body
     const { email, center, radius, type } = await req.json();
-
+    const session = await getServerSession({ req })
+    console.log(session)
+    if(!session){
+      return res.json({
+        Message:"unauthorized"
+      })
+    }
     if (!email || !center || !radius || !type) {
       return NextResponse.json(
         { error: "Email, center, radius, and type are required" },

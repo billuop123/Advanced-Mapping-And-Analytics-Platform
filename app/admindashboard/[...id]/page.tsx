@@ -95,7 +95,7 @@ const GeometryPage: React.FC = () => {
     }
   }, [id]);
 
-  const handleDelete = async (shapeId: number | undefined) => {
+  const handleDelete = async (shapeId: number | null) => {
     if (!shapeId) return;
     try {
       await axios.delete(
@@ -145,108 +145,117 @@ const GeometryPage: React.FC = () => {
   );
 
   const hasShapes =
-    (rectangles && rectangles.length > 0) ||
-    (circles && circles.length > 0) ||
-    (polygons && polygons.length > 0) ||
-    (lines && lines.length > 0);
+  (rectangles && rectangles.length > 0) ||
+  (circles && circles.length > 0) ||
+  (polygons && polygons.length > 0) ||
+  (lines && lines.length > 0);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-          role="alert"
-        >
-          <strong className="font-bold">Error: </strong>
-          <span className="block sm:inline">{error}</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">No data available</div>
-      </div>
-    );
-  }
-
+if (loading) {
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Geometry Information Display</h1>
+    <div className="flex items-center justify-center min-h-screen">
+      <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+    </div>
+  );
+}
 
-      {/* User Information */}
-      <section className="mb-8 bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">User Information</h2>
-        <div className="flex items-center gap-4">
-          <Image
-            width={12}
-            height={12}
-            src={data.polygonInfo[0].user.image}
-            alt={data.polygonInfo[0].user.name}
-            className="w-12 h-12 rounded-full"
-          />
-          <div>
-            <p className="font-medium">{data.polygonInfo[0].user.name}</p>
-            <p className="text-gray-600">{data.polygonInfo[0].user.email}</p>
-            <p className="text-gray-600">
-              Role: {data.polygonInfo[0].user.role}
-            </p>
+if (error) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div
+        className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong className="font-bold">Error: </strong>
+        <span className="block sm:inline">{error}</span>
+      </div>
+    </div>
+  );
+}
+
+if (!data) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-gray-600">No data available</div>
+    </div>
+  );
+}
+
+// Handle case where polygonInfo is empty
+if (data.polygonInfo.length === 0) {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-gray-600">No shapes found for this user.</div>
+    </div>
+  );
+}
+
+return (
+  <div className="p-6 max-w-4xl mx-auto">
+    <h1 className="text-2xl font-bold mb-6">Geometry Information Display</h1>
+
+    {/* User Information */}
+    <section className="mb-8 bg-white p-4 rounded-lg shadow">
+      <h2 className="text-xl font-semibold mb-4">User Information</h2>
+      <div className="flex items-center gap-4">
+        <Image
+          width={12}
+          height={12}
+          src={data.polygonInfo[0].user.image}
+          alt={data.polygonInfo[0].user.name}
+          className="w-12 h-12 rounded-full"
+        />
+        <div>
+          <p className="font-medium">{data.polygonInfo[0].user.name}</p>
+          <p className="text-gray-600">{data.polygonInfo[0].user.email}</p>
+          <p className="text-gray-600">
+            Role: {data.polygonInfo[0].user.role}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* Shape Statistics */}
+    <section className="mb-8 bg-white p-4 rounded-lg shadow">
+      <h2 className="text-xl font-semibold mb-4">Shape Distribution</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {Object.entries(shapeCounts).map(([type, count]) => (
+          <div key={type} className="bg-gray-50 p-4 rounded">
+            <h3 className="font-medium">{type}</h3>
+            <p className="text-2xl font-bold">{count}</p>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </section>
 
-      {/* Shape Statistics */}
-      <section className="mb-8 bg-white p-4 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Shape Distribution</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Object.entries(shapeCounts).map(([type, count]) => (
-            <div key={type} className="bg-gray-50 p-4 rounded">
-              <h3 className="font-medium">{type}</h3>
-              <p className="text-2xl font-bold">{count}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+    {/* Detailed Shape Information (only shown if there are shapes) */}
+    {hasShapes && (
+      <section className="bg-white p-4 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4">
+          Detailed Shape Information
+        </h2>
 
-      {/* Detailed Shape Information (only shown if there are shapes) */}
-      {hasShapes && (
-        <section className="bg-white p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">
-            Detailed Shape Information
-          </h2>
-
-          {rectangles && rectangles.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-4">Rectangles</h3>
-              {rectangles.map((shape, index) => (
-                <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                  <p className="font-medium">
-                    Rectangle ID: {shape.rectangle?.id}
+        {rectangles && rectangles.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold mb-4">Rectangles</h3>
+            {rectangles.map((shape, index) => (
+              <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
+                <p className="font-medium">
+                  Rectangle ID: {shape.rectangle?.id}
+                </p>
+                <p className="font-medium">
+                  Shape ID: {shape.rectangle?.shapeId}
+                </p>
+                <p className="font-medium">
+                  Date: {new Date(shape.date).toLocaleString()}
+                </p>
+                <div className="mt-2">
+                  <p className="font-medium">Bounds:</p>
+                  <p className="text-sm">
+                    Northeast: ({shape.rectangle?.bounds.northeast.lat},{" "}
+                    {shape.rectangle?.bounds.northeast.lng})
                   </p>
-                  <p className="font-medium">
-                    Shape ID: {shape.rectangle?.shapeId}
-                  </p>
-                  <p className="font-medium">
-                    Date: {new Date(shape.date).toLocaleString()}
-                  </p>
-                  <div className="mt-2">
-                    <p className="font-medium">Bounds:</p>
-                    <p className="text-sm">
-                      Northeast: ({shape.rectangle?.bounds.northeast.lat},{" "}
-                      {shape.rectangle?.bounds.northeast.lng})
-                    </p>
-                    <p className="text-sm">
-                      Southwest: ({shape.rectangle?.bounds.southwest.lat},{" "}
+                  <p className="text-sm">
+                    Southwest: ({shape.rectangle                    .bounds.southwest.lat},{" "}
                       {shape.rectangle?.bounds.southwest.lng})
                     </p>
                   </div>
@@ -356,8 +365,7 @@ const GeometryPage: React.FC = () => {
           )}
         </section>
       )}
-    </div>
-  );
+    </div>  );
 };
 
 export default GeometryPage;

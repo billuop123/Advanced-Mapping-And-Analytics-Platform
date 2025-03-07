@@ -23,6 +23,7 @@ import { EditControls } from "../services/EditControl";
 import { LivePositionButton } from "../components/LivePosition.Button";
 import { LongitudeAndLatitudeInput } from "../components/LongitudeAndLatitudeInput";
 import { useRole } from "../contexts/RoleContext";
+import { useSession } from "next-auth/react";
 
 export default function MapClient({ ref }: { ref: any }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -32,7 +33,8 @@ export default function MapClient({ ref }: { ref: any }) {
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
   const { role } = useRole();
-
+  const session=useSession()
+  console.log(session.data)
   useImperativeHandle(ref, () => ({
     handleResize() {
       if (mapRef.current) {
