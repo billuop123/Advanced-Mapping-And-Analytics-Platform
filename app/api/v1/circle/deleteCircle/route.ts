@@ -1,17 +1,16 @@
-// pages/api/v1/circles/deleteCircle.ts
+  
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 
 export async function DELETE(req: Request) {
   try {
-    // Extract the email from the request body
+  
     const { email } = await req.json();
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Find the user by email
     const user = await prisma.user.findFirst({
       where: { email: email },
     });
@@ -20,7 +19,6 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "User  not found" }, { status: 404 });
     }
 
-    // Delete all circles associated with the user
     await prisma.circle.deleteMany({
       where: {
         shape: {

@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { HiArrowLongLeft } from "react-icons/hi2";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -41,6 +42,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useRole } from "../contexts/RoleContext";
+
 
 interface User {
   id: number;
@@ -259,7 +261,12 @@ export default function AdminDashboard() {
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
+          <div onClick={()=>{window.location.href="/"}} className="flex hover:text-slate-700 items-center gap-1 cursor-pointer">
+             <HiArrowLongLeft />
+            <h2>Map</h2>
+          </div>
+        
           <Button
             onClick={handleSaveChanges}
             disabled={saving || pendingChanges.length === 0}

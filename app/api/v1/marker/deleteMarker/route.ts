@@ -46,6 +46,7 @@ export async function POST(req: Request) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete marker" });
+    //@ts-expect-error
+    return NextResponse.json({ error: error.message });
   }
 }

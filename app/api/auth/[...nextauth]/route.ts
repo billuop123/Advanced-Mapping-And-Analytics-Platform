@@ -103,7 +103,7 @@ const options: NextAuthOptions = {
       if (token.id) {
         session.user = {
           ...session.user,
-          //@ts-ignore
+          //@ts-expect-error
           id: token.id as string,
           accessToken:token.accessToken as string
         };

@@ -7,7 +7,7 @@ import { useUser } from "../contexts/LoginContext";
 import { useRouter } from "next/navigation";
 
 const MapDashboardContainer = () => {
-  const [isDashboardVisible, setIsDashboardVisible] = useState(true);
+  const [isDashboardVisible, setIsDashboardVisible] = useState(false);
   const mapRef = useRef(null);
   const { status, email } = useUser();
   const toggleDashboard = () => {

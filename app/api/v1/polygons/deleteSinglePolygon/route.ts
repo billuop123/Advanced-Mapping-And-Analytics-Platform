@@ -7,6 +7,7 @@ const roundTo10DecimalPlaces = (num: number) => {
 };
 
 // Function to compare two sets of coordinates
+
 const areCoordinatesEqual = (coords1: any[], coords2: any[]) => {
   if (coords1.length !== coords2.length) return false;
 
@@ -44,6 +45,7 @@ export async function POST(req: Request) {
     const normalizedCoords = Array.isArray(coords) ? coords : [coords];
 
     // Round the coordinates to 10 decimal places
+  
     const roundedCoords = normalizedCoords.map((point: any) => ({
       lat: roundTo10DecimalPlaces(point.lat),
       lng: roundTo10DecimalPlaces(point.lng),
@@ -82,6 +84,7 @@ export async function POST(req: Request) {
       }
 
       // Round the database coordinates
+      //@ts-expect-error
       const roundedDbCoords = dbCoords?.map((point: any) => ({
         lat: roundTo10DecimalPlaces(point.lat),
         lng: roundTo10DecimalPlaces(point.lng),
