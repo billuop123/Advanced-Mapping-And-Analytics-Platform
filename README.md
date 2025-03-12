@@ -65,7 +65,7 @@ Update the `DATABASE_URL` and any other necessary environment variables in the `
 Example:
 ```yaml
 environment:
-  - DATABASE_URL=postgresql://postgres:mrcool10@postgres:5432/somedb?schema=public
+  - DATABASE_URL=postgresql://postgres:password@postgres:5432/somedb?schema=public
 ```
 
 3. **Run Docker Compose:**
@@ -76,9 +76,9 @@ This will build and start both the Postgres and user app containers.
 
 4. **Access the Services:**
 - **Postgres:** Accessible at `localhost:5432` with the credentials:
-  - Username: `postgres`
-  - Password: `mrcool10`
-  - Database: `somedb`
+  - Username: `username`
+  - Password: `password`
+  - Database: `dbname`
 - **User App:** Accessible at `http://localhost:3001`
 
 5. **Access Postgres CLI (Optional):**
@@ -103,5 +103,5 @@ This stops and removes the containers but preserves data in the volume.
 
 ---
 
-Now you're ready to run the project with Docker! 🐳 Let me know if you'd like to add more details or handle environment files.
+
 
