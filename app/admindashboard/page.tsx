@@ -42,7 +42,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdDelete } from "react-icons/md";
 import { useRole } from "../contexts/RoleContext";
-
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
 
 interface User {
   id: number;
@@ -106,8 +114,6 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (userId: number) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
-
     try {
       setError(null);
       await axios.post(`http://localhost:3001/api/v1/user/userDelete`, {
@@ -212,26 +218,71 @@ export default function AdminDashboard() {
       id: "actions",
       cell: ({ row }) => {
         const user = row.original;
-
+    
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-red-600"
-                onClick={() => handleDeleteUser(user.id)}
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger 
+                asChild 
+                onClick={(e) => e.stopPropagation()}
               >
-                <MdDelete />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent 
+                align="end" 
+                onClick={(e) => e.stopPropagation()}
+              >
+                <DialogTrigger asChild>
+                  <DropdownMenuItem 
+                    className="text-red-600"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <MdDelete className="mr-2" /> Delete User
+                  </DropdownMenuItem>
+                </DialogTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
+              <DialogHeader>
+                <DialogTitle>Delete User</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete the user {user.name}?
+                  This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const dialog = e.currentTarget.closest('[role="dialog"]');
+                    dialog?.querySelector('[data-radix-dialog-close]')?.dispatchEvent(new Event('click'));
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteUser(user.id);
+                    const dialog = e.currentTarget.closest('[role="dialog"]');
+                    dialog?.querySelector('[data-radix-dialog-close]')?.dispatchEvent(new Event('click'));
+                  }}
+                >
+                  Delete
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         );
       },
-    },
+    }
   ];
 
   const table = useReactTable({
@@ -345,7 +396,7 @@ export default function AdminDashboard() {
                     key={row.id}
                     onClick={() =>
                       router.push(`/admindashboard/${row.original.id}`)
-                    } // Add onClick handler
+                    }
                     className={
                       pendingChanges.some(
                         (change) => change.userId === row.original.id
