@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken"
 // Function to round coordinates to 10 decimal places
 const roundTo10DecimalPlaces = (num: number) => {
   return parseFloat(num.toFixed(10));
@@ -36,8 +38,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Request body is required" });
     }
 
-    const { email, coords } = body;
-    if (!email || !coords) {
+    const { coords } = body;
+      const session = await getServerSession(options);
+                                 
+                               
+                                   if (!session) {
+                                     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                                   }
+                               //@ts-expect-error
+                                   const {userId} = jwt.decode(session.user.accessToken) 
+    if (  !coords) {
       return NextResponse.json({ error: "Email and coordinates are required" });
     }
 
@@ -51,20 +61,15 @@ export async function POST(req: Request) {
       lng: roundTo10DecimalPlaces(point.lng),
     }));
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
+ 
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" });
-    }
+    
 
     // Find all polygons for the user
     const polygons = await prisma.polygon.findMany({
       where: {
         shape: {
-          userId: user.id,
+          userId: userId,
         },
       },
     });

@@ -1,17 +1,26 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken"
 // Function to round coordinates to 10 decimal places
-const roundTo10DecimalPlaces = (num) => {
+const roundTo10DecimalPlaces = (num:Number) => {
   return parseFloat(num.toFixed(10));
 };
 
 export async function POST(req: Request) {
   try {
-    const { email, bounds } = await req.json();
-
+    const { bounds } = await req.json();
+    const session = await getServerSession(options);
+                                        
+                                      
+                                          if (!session) {
+                                            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                                          }
+                                      //@ts-expect-error
+                                          const {userId} = jwt.decode(session.user.accessToken) 
     // Validate input
-    if (!email || !bounds) {
+    if (!bounds) {
       return NextResponse.json(
         { error: "Email and bounds are required" },
         { status: 400 }
@@ -31,11 +40,9 @@ export async function POST(req: Request) {
 
     console.log("Rounded Bounds:", roundedBounds);
 
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
 
-    if (!user) {
+
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -43,7 +50,7 @@ export async function POST(req: Request) {
     const rectangles = await prisma.rectangle.findMany({
       where: {
         shape: {
-          userId: user.id, // Ensure the rectangle belongs to the user
+          userId: userId, // Ensure the rectangle belongs to the user
         },
       },
     });
@@ -52,11 +59,15 @@ export async function POST(req: Request) {
     const rectangle = rectangles.find((rect) => {
       const dbBounds = {
         southwest: {
-          lat: roundTo10DecimalPlaces(rect.bounds.southwest.lat),
+          //@ts-expect-error
+          lat: roundTo10DecimalPlaces(rect.bounds!.southwest.lat),
+             //@ts-expect-error
           lng: roundTo10DecimalPlaces(rect.bounds.southwest.lng),
         },
         northeast: {
+             //@ts-expect-error
           lat: roundTo10DecimalPlaces(rect.bounds.northeast.lat),
+             //@ts-expect-error
           lng: roundTo10DecimalPlaces(rect.bounds.northeast.lng),
         },
       };
@@ -80,7 +91,7 @@ export async function POST(req: Request) {
       { message: "Rectangle deleted successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error:any) {
     return NextResponse.json({
       details: error.message,
     });

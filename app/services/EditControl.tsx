@@ -7,7 +7,7 @@ import { _created } from "./CreatedShape";
 import { useEditedDebounced } from "./EditedShape";
 import L from "leaflet";
 
-export const EditControls = function ({ featureGroupRef }) {
+export const EditControls = function ({ featureGroupRef}) {
   const { isDrawing } = useDrawing();
   const { shapes, setShapes } = useShapes();
   const { email } = useUser();

@@ -1,19 +1,25 @@
+import { options } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/app/services/prismaClient";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
+import jwt from "jsonwebtoken"
 export async function POST(req: NextRequest) {
   try {
-    const { email, newLocation } = await req.json();
-    console.log(email, newLocation);
+     const session = await getServerSession(options);
+                  
+                
+                    if (!session) {
+                      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                    }
+                //@ts-expect-error
+                    const {userId} = jwt.decode(session.user.accessToken) 
+    const { newLocation } = await req.json();
+   
     // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+  
 
     // If no user is found, return an error response
-    if (!user) {
+    if (!userId) {
       return NextResponse.json(
         { message: "No user found with the provided email" },
         { status: 404 }
@@ -23,7 +29,7 @@ export async function POST(req: NextRequest) {
     // Create a new location in the database
     const newMarker = await prisma.location.create({
       data: {
-        userId: user.id,
+        userId: userId,
         latitude: newLocation.latitude, // Access latitude directly
         longitude: newLocation.longitude, // Access longitude directly
         description: newLocation.description, // Use name or description

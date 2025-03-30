@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken";
 export async function POST(req: Request) {
   try {
-    // Parse the request body
+      const session= await getServerSession(options)
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+//@ts-expect-error
+     const {userId} = jwt.decode(session.user.accessToken) 
     const body = await req.json();
     if (!body) {
       return NextResponse.json(
@@ -12,21 +20,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Extract email, center, and radius from the request body
-    const { email, center, radius } = body;
-    if (!email || !center || !radius) {
+
+    const {  center, radius } = body;
+    if (!center || !radius) {
       return NextResponse.json(
         { error: "Email, center, and radius are required" },
         { status: 400 }
       );
     }
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
-
-    if (!user) {
+   
+    if (!userId) {
       return NextResponse.json({ error: "User  not found" });
     }
 
@@ -39,7 +43,7 @@ export async function POST(req: Request) {
           equals: center.lat,
         },
         shape: {
-          userId: user.id,
+          userId: Number(userId),
         },
       },
     });
@@ -48,7 +52,7 @@ export async function POST(req: Request) {
       console.error("Circle not found for:", {
         center,
         radius,
-        userId: user.id,
+        userId: userId,
       });
       return NextResponse.json({ error: "Circle not found" });
     }
@@ -67,6 +71,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error deleting circle:", error || "Unknown error");
     return NextResponse.json(
+//@ts-expect-error
       { error: error?.message || "Failed to delete circle" },
       { status: 500 }
     );

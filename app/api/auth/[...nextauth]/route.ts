@@ -3,30 +3,68 @@ import bcrypt from "bcrypt";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import jwt from "jsonwebtoken"
-const options: NextAuthOptions = {
+import jwt from "jsonwebtoken";
+
+export const options: NextAuthOptions = {
   debug: true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+      async profile(profile) {
+        // If user signs in with Google, create or find a user in the database
+        const existingUser = await prisma.user.findFirst({
+          where: { email: profile.email },
+        });
+
+        if (!existingUser) {
+          // If no user exists, create a new user with the Google profile details
+          const newUser = await prisma.user.create({
+            data: {
+              name: profile.name || "",
+              email: profile.email || "",
+              image: profile.picture || null,
+            },
+          });
+
+          // Generate a JWT token after creating a new user
+          const jwtToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
+
+          return {
+            id: newUser.id.toString(),
+            name: newUser.name,
+            email: newUser.email,
+            image: newUser.image,
+            accessToken: jwtToken, // Include the JWT token
+          };
+        }
+
+        // If user exists, generate JWT token for the existing user
+        const jwtToken = jwt.sign({ userId: existingUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
+
+        return {
+          id: existingUser.id.toString(),
+          name: existingUser.name,
+          email: existingUser.email,
+          image: existingUser.image,
+          accessToken: jwtToken, // Include the JWT token
+        };
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        name: { label: "Name", type: "text" }, // Add name field for signup
+        name: { label: "Name", type: "text" },
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        isSignup: { label: "Is Signup", type: "boolean" }, // Add a flag to distinguish signup
+        isSignup: { label: "Is Signup", type: "boolean" },
       },
       async authorize(credentials) {
         if (!credentials) return null;
 
         const { name, email, password, isSignup } = credentials;
 
-        // Handle Signup
         if (isSignup) {
-          // Check if the user already exists
           const existingUser = await prisma.user.findFirst({
             where: { email },
           });
@@ -35,58 +73,51 @@ const options: NextAuthOptions = {
             throw new Error("User already exists");
           }
 
-          // Hash the password
           const hashedPassword = await bcrypt.hash(password, 10);
 
-          // Create new user
           const newUser = await prisma.user.create({
             data: {
-              name: name || "", // Provide a default value if name is null or undefined
-              email: email || "", // Provide a default value if email is null or undefined
+              name: name || "",
+              email: email || "",
               password: hashedPassword,
             },
           });
 
-          // Return the new user object with id as a string
+          // Generate a JWT token after signing up
+          const jwtToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
+
           return {
-            id: newUser.id.toString(), // Convert id to string
+            id: newUser.id.toString(),
             name: newUser.name,
             email: newUser.email,
+            accessToken: jwtToken, // Generate and send the JWT token in accessToken
           };
-        }
-
-        // Handle Signin
-        else {
-          // Find the user in the database
+        } else {
           const user = await prisma.user.findFirst({
             where: { email },
           });
-          const jwtT=jwt.sign({
-            userId:user?.id
-          },"secret")
+
           if (!user) {
             throw new Error("User not found");
           }
 
-          // Verify the password
-          const isValidPassword = await bcrypt.compare(
-            password,
-            user.password || ""
-          );
+          const isValidPassword = await bcrypt.compare(password, user.password || "");
 
           if (!isValidPassword) {
             throw new Error("Invalid password");
           }
 
-          // Return the user object with id as a string
+          // Generate a JWT token after successful login
+          const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
+
           return {
-            id: user.id.toString(), // Convert id to string
+            id: user.id.toString(),
             name: user.name,
             email: user.email,
-            accessToken:jwtT
+            accessToken: jwtToken, // Include the JWT token in accessToken
           };
         }
-      },
+      }
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
@@ -94,7 +125,8 @@ const options: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.accessToken=user.accessToken
+        token.accessToken = user.accessToken;
+        token.image = user.image; // Store the JWT token in the token object
       }
       return token;
     },
@@ -103,9 +135,9 @@ const options: NextAuthOptions = {
       if (token.id) {
         session.user = {
           ...session.user,
-          //@ts-expect-error
           id: token.id as string,
-          accessToken:token.accessToken as string
+          accessToken: token.accessToken as string,
+          image: token.image as string, // Add JWT token to session
         };
       }
       return session;
@@ -120,8 +152,8 @@ const options: NextAuthOptions = {
         if (!existingUser) {
           await prisma.user.create({
             data: {
-              name: user.name || "", // Provide a default value if name is null or undefined
-              email: user.email || "", // Provide a default value if email is null or undefined
+              name: user.name || "",
+              email: user.email || "",
               image: user.image || null,
             },
           });
@@ -131,7 +163,6 @@ const options: NextAuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      // Redirect to a specific page after sign-in
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
       } else if (new URL(url).origin === baseUrl) {

@@ -42,7 +42,20 @@ export default function MapClient({ ref }: { ref: any }) {
       }
     },
   }));
+  useEffect(() => {
+    const handlePopState = () => {
+  
+      window.location.reload();
+    };
 
+
+    window.addEventListener("popstate", handlePopState);
+
+   
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
   useEffect(() => {
     return () => {
       console.log("called cleanup");

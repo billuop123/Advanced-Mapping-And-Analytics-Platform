@@ -1,47 +1,48 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
 import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route"; // Ensure this is the correct import for your auth options
+import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    // Extract the email, center, radius, and type from the request body
-    const { email, center, radius, type } = await req.json();
-    const session = await getServerSession({ req })
-    console.log(session)
-    if(!session){
-      return res.json({
-        Message:"unauthorized"
-      })
+  
+    const {  center, radius, type } = await req.json();
+
+
+    const session = await getServerSession(options);
+  
+
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    if (!email || !center || !radius || !type) {
+//@ts-expect-error
+    const {userId} = jwt.decode(session.user.accessToken) 
+
+    if (!userId) {
+      return NextResponse.json({ error: "User  not found" }, { status: 404 });
+    }
+
+ 
+    if ( !center || !radius || !type) {
       return NextResponse.json(
         { error: "Email, center, radius, and type are required" },
         { status: 400 }
       );
     }
 
-    // Round the center coordinates and radius to 15 decimal places
+
     const roundedCenter = {
       lat: parseFloat(center.lat.toFixed(15)),
       lng: parseFloat(center.lng.toFixed(15)),
     };
     const roundedRadius = parseFloat(radius.toFixed(15));
 
-    // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
 
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Create a new shape with a circle
     const shape = await prisma.shape.create({
       data: {
         type: type,
-        userId: user.id,
+        userId: Number(userId), 
         circle: {
           create: {
             center: roundedCenter,
@@ -58,6 +59,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error saving circle:", error);
     return NextResponse.json(
+      //@ts-expect-error
       { error: error.message || "Failed to save circle" },
       { status: 500 }
     );

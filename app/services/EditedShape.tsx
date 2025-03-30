@@ -91,6 +91,7 @@ const _editedDebounced = debounce(
 
       // Create a set of edited layer IDs for easier comparison
       const editedLayerIds = new Set(
+        //@ts-expect-error
         editedLayers.map((layer) => layer._leaflet_id)
       );
 
@@ -100,6 +101,7 @@ const _editedDebounced = debounce(
         console.log("Processing layer:", layer);
 
         // Capture the new state of edited
+        //@ts-expect-error
         if (editedLayerIds.has(layer._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name
@@ -283,6 +285,7 @@ const _editedDebounced = debounce(
 
       // Reattach popup content to edited layers
       for (const layer of allLayers) {
+//@ts-expect-error
         if (editedLayerIds.has(layer._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name

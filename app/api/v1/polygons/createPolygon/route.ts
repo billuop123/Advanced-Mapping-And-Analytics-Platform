@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken"
 export async function POST(req: Request) {
   try {
     // Extract the email, coordinates, and type from the request body
-    const { email, coords, type } = await req.json();
+    const session = await getServerSession(options);
+                          
+                        
+                            if (!session) {
+                              return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                            }
+                        //@ts-expect-error
+                            const {userId} = jwt.decode(session.user.accessToken) 
+    const {  coords, type } = await req.json();
 
-    if (!email || !coords || !type) {
+    if (!coords || !type) {
       return NextResponse.json(
         { error: "Email, coordinates, and type are required" },
         { status: 400 }
@@ -14,19 +24,17 @@ export async function POST(req: Request) {
     }
 
     // Round the coordinates to 15 decimal places
-    let roundedCoords = coords.map((polygon) =>
-      polygon.map((point) => ({
+    let roundedCoords = coords.map((polygon:any) =>
+      polygon.map((point:any) => ({
         lat: parseFloat(point.lat.toFixed(15)),
         lng: parseFloat(point.lng.toFixed(15)),
       }))
     );
     roundedCoords = roundedCoords.flat();
     // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
+   
 
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -34,7 +42,7 @@ export async function POST(req: Request) {
     const shape = await prisma.shape.create({
       data: {
         type: type,
-        userId: user.id,
+        userId: userId,
         polygon: {
           create: {
             coords: roundedCoords, // Use the rounded coordinates

@@ -1,11 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken"
 export async function POST(req: Request) {
   try {
-    const { email, bounds, type } = await req.json();
-
-    if (!email || !bounds || !type) {
+    const { bounds, type } = await req.json();
+const session = await getServerSession(options);
+                                    
+                                  
+                                      if (!session) {
+                                        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                                      }
+                                  //@ts-expect-error
+                                      const {userId} = jwt.decode(session.user.accessToken) 
+    if (  !bounds || !type) {
       return NextResponse.json(
         { error: "Email, bounds, and type are required" },
         { status: 400 }
@@ -23,18 +32,16 @@ export async function POST(req: Request) {
       },
     };
 
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
 
-    if (!user) {
+
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const shape = await prisma.shape.create({
       data: {
         type: type,
-        userId: user.id,
+        userId: userId,
         rectangle: {
           create: {
             bounds: roundedBounds,

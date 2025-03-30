@@ -4,12 +4,18 @@ export const LivePositionButton = function () {
   const { setPosition } = usePosition();
   const handleClickCurrentPosition = () => {
     navigator.geolocation.getCurrentPosition(
+      
       (pos) => {
+        console.log(pos)
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
       },
       (error) => {
         console.error("Error fetching location:", error);
+      }, {
+        enableHighAccuracy: true, // Use GPS if available
+        timeout: 10000, // Wait 10 seconds before failing
+        maximumAge: 0, // Always fetch a fresh location
       }
     );
   };

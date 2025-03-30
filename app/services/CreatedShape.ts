@@ -1,22 +1,24 @@
 import axios from "axios";
 import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+
 type ShapesState = {
   polygons: LatLngExpression[][];
   circles: { center: LatLng; radius: number }[];
   polylines: LatLngExpression[][];
   rectangles: LatLngBounds[];
 };
-
 export const _created = async (
   e: { layer: L.Layer },
   email: string | null | undefined,
-  setShapes: React.Dispatch<React.SetStateAction<any>>
+  setShapes: React.Dispatch<React.SetStateAction<any>>,
+
 ) => {
   const layer = e.layer;
 
   if (layer instanceof L.Rectangle) {
     const bounds = layer.getBounds();
     try {
+
       await axios.post(
         "http://localhost:3001/api/v1/rectangles/createRectangle",
         {
@@ -62,7 +64,6 @@ export const _created = async (
     const radius = layer.getRadius();
     try {
       await axios.post("http://localhost:3001/api/v1/circle/createCircle", {
-        email,
         center: center,
         radius: radius,
         type: "CIRCLE",

@@ -1,17 +1,23 @@
+import { options } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/app/services/prismaClient";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-
+import jwt from "jsonwebtoken"
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const session = await getServerSession(options);
+                          
+                        
+                            if (!session) {
+                              return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                            }
+                        //@ts-expect-error
+                            const {userId} = jwt.decode(session.user.accessToken) 
 
-    const user = await prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
 
-    if (!user) {
+ 
+
+    if (!userId) {
       return NextResponse.json(
         { message: "No user found with the provided email" },
         { status: 404 }
@@ -21,7 +27,7 @@ export async function POST(req: NextRequest) {
     const adminIds = admins.map((admin) => admin.id);
     const markers = await prisma.location.findMany({
       where: {
-        userId: { in: [...adminIds, user.id] },
+        userId: { in: [...adminIds, userId] },
       },
     });
 

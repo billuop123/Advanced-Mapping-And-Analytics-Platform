@@ -1,35 +1,47 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
+import { LatLng } from "leaflet";
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
 
-// Function to round coordinates to 10 decimal places
-const roundTo10DecimalPlaces = (num) => {
+import jwt from "jsonwebtoken"
+const roundTo10DecimalPlaces = (num:Number) => {
   return parseFloat(num.toFixed(10));
 };
 
 export async function POST(req: Request) {
   try {
     // Extract the email and coordinates from the request body
-    const { email, coords, type } = await req.json();
 
-    if (!email || !coords || !type) {
+    
+    
+        const session = await getServerSession(options);
+      
+    
+        if (!session) {
+          return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
+    //@ts-expect-error
+        const {userId} = jwt.decode(session.user.accessToken) 
+    const {  coords, type } = await req.json();
+
+    if (!coords || !type) {
       return NextResponse.json(
-        { error: "Email, coordinates, and type are required" },
+        { error: "coordinates, and type are required" },
         { status: 400 }
       );
     }
 
     // Round the coordinates to 10 decimal places
-    const roundedCoords = coords.map((coord) => ({
+    const roundedCoords = coords.map((coord:any) => ({
       lat: roundTo10DecimalPlaces(coord.lat),
       lng: roundTo10DecimalPlaces(coord.lng),
     }));
 
     // Find the user by email
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
+  
 
-    if (!user) {
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -37,7 +49,7 @@ export async function POST(req: Request) {
     const shape = await prisma.shape.create({
       data: {
         type: type,
-        userId: user.id,
+        userId: userId,
         polyline: {
           create: {
             coords: roundedCoords, // Store the rounded coordinates as JSON

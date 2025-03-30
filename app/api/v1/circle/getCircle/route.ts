@@ -1,16 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
-export async function POST(req: Request) {
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken";
+export async function GET(req: Request) {
   try {
-    const { email } = await req.json();
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
-
-    // Find user
-    const user = await prisma.user.findFirst({ where: { email } });
-    if (!user) {
+        const session = await getServerSession(options);
+      
+    
+        if (!session) {
+          return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
+    //@ts-expect-error
+        const {userId} = jwt.decode(session.user.accessToken) 
+    // const { email } = await req.json();
+   
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
@@ -32,7 +37,7 @@ export async function POST(req: Request) {
     const userCircles = await prisma.circle.findMany({
       where: {
         shape: {
-          userId: user.id,
+          userId: userId,
         },
       },
       include: { shape: true },
@@ -51,10 +56,10 @@ export async function POST(req: Request) {
     }));
 
     return NextResponse.json(formattedCircles, { status: 200 });
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error fetching circles:", error);
     return NextResponse.json(
-      { error: "Failed to fetch circles" },
+      { error: `Failed to fetch circles ${error.message}` },
       { status: 500 }
     );
   }

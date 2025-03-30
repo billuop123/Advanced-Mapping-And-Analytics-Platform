@@ -1,31 +1,39 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient"; // Adjust the import based on your project structure
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { email, shape } = body;
+    const { shape } = body;
+        const session = await getServerSession(options);
+                                                 
+                                               
+                                                   if (!session) {
+                                                     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                                                   }
+                                               //@ts-expect-error
+                                                   const {userId} = jwt.decode(session.user.accessToken) 
 
-    console.log(email, shape);
 
-    if (!email || !shape) {
+    if (!shape) {
       return NextResponse.json(
         { error: "Email and shape data are required" },
         { status: 400 }
       );
     }
 
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
 
-    if (!user) {
+
+    if (!userId) {
       return NextResponse.json({ error: "User  not found" }, { status: 404 });
     }
 
     let center;
     if (shape.type === "CIRCLE") {
       center = {
+        //@ts-expect-error
         lat: parseFloat(shape.data.center.lat.toFixed(15)),
         lng: parseFloat(shape.data.center.lng.toFixed(15)),
       };
@@ -37,7 +45,7 @@ export async function POST(req: Request) {
       case "CIRCLE":
         shapeToDelete = await prisma.shape.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
             type: "CIRCLE",
             circle: {
               center: center, // Use the rounded center
@@ -49,7 +57,7 @@ export async function POST(req: Request) {
       case "RECTANGLE":
         shapeToDelete = await prisma.shape.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
             type: "RECTANGLE",
             rectangle: {
               bounds: shape.data.bounds, // Assuming bounds is a JSON object
@@ -60,7 +68,7 @@ export async function POST(req: Request) {
       case "POLYGON":
         shapeToDelete = await prisma.shape.findFirst({
           where: {
-            userId: user.id,
+            userId:userId,
             type: "POLYGON",
             polygon: {
               coords: shape.data.coords, // Assuming coords is a JSON object
@@ -71,7 +79,7 @@ export async function POST(req: Request) {
       case "POLYLINE":
         shapeToDelete = await prisma.shape.findFirst({
           where: {
-            userId: user.id,
+            userId: userId,
             type: "POLYLINE",
             polyline: {
               coords: shape.data.coords, // Assuming coords is a JSON object
@@ -101,7 +109,7 @@ export async function POST(req: Request) {
       { message: "Shape deleted successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error deleting shape:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete shape" },

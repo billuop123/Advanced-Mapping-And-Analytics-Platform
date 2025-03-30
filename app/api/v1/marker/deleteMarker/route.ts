@@ -1,33 +1,37 @@
 // pages/api/v1/shapes/deleteMarker.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
-
+import { getServerSession } from "next-auth";
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken"
 export async function POST(req: Request) {
   try {
-    const { email, coordinates } = await req.json();
-    console.log(email, coordinates);
-    if (!email || !coordinates) {
+       const session = await getServerSession(options);
+                      
+                    
+                        if (!session) {
+                          return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+                        }
+                    //@ts-expect-error
+                        const {userId} = jwt.decode(session.user.accessToken) 
+    const { coordinates } = await req.json();
+
+    if (!coordinates) {
       return NextResponse.json(
         { error: "Email and coordinates are required" },
         { status: 400 }
       );
     }
 
-    const user = await prisma.user.findFirst({
-      where: { email: email },
-    });
 
-    if (!user) {
+
+    if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    console.log(
-      user.id,
-      coordinates.lat.toFixed(14),
-      coordinates.lng.toFixed(14)
-    );
+
     const location = await prisma.location.findFirst({
       where: {
-        userId: user.id,
+        userId: userId,
         latitude: parseFloat(coordinates.lat.toFixed(15)),
         longitude: parseFloat(coordinates.lng.toFixed(15)),
       },

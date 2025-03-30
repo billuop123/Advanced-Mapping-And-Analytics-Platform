@@ -20,7 +20,7 @@ export const handleDeleteCircle = async (
     const response = await axios.post(
       "http://localhost:3001/api/v1/circle/deleteSingleCircle",
       {
-        email,
+        
         center,
         radius,
       }

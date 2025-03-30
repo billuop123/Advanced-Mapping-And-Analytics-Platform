@@ -51,9 +51,7 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
           email,
         }),
         axios.post("http://localhost:3001/api/v1/line/getLine", { email }),
-        axios.post("http://localhost:3001/api/v1/circle/getCircle", {
-          email,
-        }),
+        axios.get("http://localhost:3001/api/v1/circle/getCircle" ),
         axios.post("http://localhost:3001/api/v1/polygons/getPolygon", {
           email,
         }),
