@@ -13,8 +13,8 @@ export async function POST(req: Request) {
                                             if (!session) {
                                               return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
                                             }
-                                        //@ts-expect-error
-                                            const {userId} = jwt.decode(session.user.accessToken) 
+                               
+                                            const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
     if (!shapes || !Array.isArray(shapes) || shapes.length === 0) {
       return NextResponse.json(
         { error: "Email and shapes array are required" },

@@ -11,9 +11,12 @@ export async function GET(req: Request) {
         if (!session) {
           return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
-    //@ts-expect-error
-        const {userId} = jwt.decode(session.user.accessToken) 
-    // const { email } = await req.json();
+
+        const decodedToken = jwt.decode(session.user.accessToken);
+        if (!decodedToken || typeof decodedToken === 'string') {
+          return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+        }
+        const userId = Number(decodedToken.userId);
    
     if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });

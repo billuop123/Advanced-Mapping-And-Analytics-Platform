@@ -10,8 +10,8 @@ export async function POST(req: Request) {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-//@ts-expect-error
-     const {userId} = jwt.decode(session.user.accessToken) 
+
+     const {userId} = jwt.decode(session.user.accessToken)  as { userId: number }
     const body = await req.json();
     if (!body) {
       return NextResponse.json(
@@ -68,10 +68,10 @@ export async function POST(req: Request) {
       { message: "Circle deleted successfully" },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error deleting circle:", error || "Unknown error");
     return NextResponse.json(
-//@ts-expect-error
+
       { error: error?.message || "Failed to delete circle" },
       { status: 500 }
     );

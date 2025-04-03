@@ -91,8 +91,7 @@ const _editedDebounced = debounce(
 
       // Create a set of edited layer IDs for easier comparison
       const editedLayerIds = new Set(
-        //@ts-expect-error
-        editedLayers.map((layer) => layer._leaflet_id)
+        editedLayers.map((layer) => (layer as any)._leaflet_id)
       );
 
       const shapesToCreate: any[] = [];
@@ -101,8 +100,7 @@ const _editedDebounced = debounce(
         console.log("Processing layer:", layer);
 
         // Capture the new state of edited
-        //@ts-expect-error
-        if (editedLayerIds.has(layer._leaflet_id)) {
+        if (editedLayerIds.has((layer as any)._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name
           );
@@ -213,39 +211,25 @@ const _editedDebounced = debounce(
       console.log("Shapes to Create:", shapesToCreate);
       const newShapes = {
         polygons: shapesToCreate
-
           .filter((shape) => shape.type === "POLYGON")
-
           .map((shape) => shape.data.coords),
-
         circles: shapesToCreate
-
           .filter((shape) => shape.type === "CIRCLE")
-
           .map((shape) => ({
             center: { lat: shape.data.center.lat, lng: shape.data.center.lng },
-
             radius: shape.data.radius,
           })),
-
         polylines: shapesToCreate
-
           .filter((shape) => shape.type === "POLYLINE")
-
           .map((shape) => shape.data.coords),
-
         rectangles: shapesToCreate
-
           .filter((shape) => shape.type === "RECTANGLE")
-
           .map((shape) =>
             L.latLngBounds(
               [
                 shape.data.bounds.southwest.lat,
-
                 shape.data.bounds.southwest.lng,
               ],
-
               [shape.data.bounds.northeast.lat, shape.data.bounds.northeast.lng]
             )
           ),
@@ -285,8 +269,7 @@ const _editedDebounced = debounce(
 
       // Reattach popup content to edited layers
       for (const layer of allLayers) {
-//@ts-expect-error
-        if (editedLayerIds.has(layer._leaflet_id)) {
+        if (editedLayerIds.has((layer as any)._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name
           );

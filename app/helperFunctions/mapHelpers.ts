@@ -31,12 +31,11 @@ export const handleDeleteCircle = async (
       setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         circles: prevShapes.circles.filter(
-          (circle) =>
-            //@ts-ignore
-            circle.center.lat !== center.lat ||
-            //@ts-ignore
-            circle.center.lng !== center.lng ||
-            circle.radius !== radius
+          (circle) => {
+            const centerLat = typeof center === 'object' && 'lat' in center ? center.lat : center[0];
+            const centerLng = typeof center === 'object' && 'lng' in center ? center.lng : center[1];
+            return circle.center.lat !== centerLat || circle.center.lng !== centerLng || circle.radius !== radius;
+          }
         ),
       }));
     } else {

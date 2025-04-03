@@ -16,8 +16,8 @@ export async function POST(req: Request) {
             if (!session) {
               return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
             }
-        //@ts-expect-error
-            const {userId} = jwt.decode(session.user.accessToken) 
+    
+            const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
     const {coords } = await req.json();
    
     // Validate input
@@ -49,8 +49,8 @@ export async function POST(req: Request) {
     });
 
     const polyline = polylines.find((line) => {
-      //@ts-expect-error
-      const dbCoords = line.coords.map((coord) => ({
+      if (!line.coords) return false;
+      const dbCoords = (line.coords as any[]).map((coord) => ({
         lat: roundTo10DecimalPlaces(coord.lat),
         lng: roundTo10DecimalPlaces(coord.lng),
       }));

@@ -51,6 +51,7 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog";
+import { useSession } from "next-auth/react";
 
 interface User {
   id: number;
@@ -75,18 +76,30 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const { role } = useRole();
   const router = useRouter();
-
+  const session=useSession()
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    if (!role) return;
-    if (role != "admin") {
-      window.location.href = "/";
+  useEffect(()=>{
+    async function fetchVerificationResponse(){
+      const response=await axios.post("http://localhost:3001/api/v1/isVerified",{
+        userId:session.data?.user.id
+      })
+      console.log(`${response.data}----------`)
+      if(!response.data.isVerified){
+        router.push("/sendEmailVerification")
+      }
     }
-  }, [role, router]);
-
+    fetchVerificationResponse()
+  
+  },[])
+useEffect(()=>{
+  if(role!=="admin")
+  {
+  window.location.href="/"
+  }
+})
   async function fetchUsers() {
     try {
       setLoading(true);

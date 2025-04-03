@@ -49,7 +49,7 @@ export default function Signup() {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push("/api/auth/signin");
+        router.push("/verificationSent");
       }
     } catch (error) {
       console.error("Signup error:", error);

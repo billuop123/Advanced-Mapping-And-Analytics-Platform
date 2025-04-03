@@ -12,8 +12,8 @@ export async function POST(req: Request) {
                         if (!session) {
                           return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
                         }
-                    //@ts-expect-error
-                        const {userId} = jwt.decode(session.user.accessToken) 
+                 
+                        const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
     const { coordinates } = await req.json();
 
     if (!coordinates) {

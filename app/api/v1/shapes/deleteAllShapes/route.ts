@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken";
 
 export async function DELETE(req: Request) {
   try {
@@ -12,8 +13,8 @@ export async function DELETE(req: Request) {
                                              if (!session) {
                                                return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
                                              }
-                                         //@ts-expect-error
-                                             const {userId} = jwt.decode(session.user.accessToken) 
+                           
+                                             const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
 
     
 

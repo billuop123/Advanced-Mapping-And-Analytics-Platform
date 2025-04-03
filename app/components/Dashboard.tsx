@@ -179,3 +179,26 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+/*function lockFilledRows() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var range = sheet.getDataRange();
+  var values = range.getValues();
+  var protection = sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  Logger.log(range);
+  Logger.log(values);
+  Logger.log(protection);
+  Logger.log(sheet)
+  // Remove existing protections
+  protection.forEach(prot => prot.remove());
+
+  for (var i = 0; i < values.length; i++) {
+    if (values[i].every(cell => cell.toString().trim() !== "")) { // Check if all columns are filled
+      var rowRange = sheet.getRange(i + 1, 1, 1, sheet.getLastColumn());
+      var lock = rowRange.protect();
+      lock.removeEditors(lock.getEditors()); // Lock for everyone except owner
+      lock.setWarningOnly(false); // Completely lock the row
+    }
+  }
+} */

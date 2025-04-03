@@ -4,6 +4,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import jwt from "jsonwebtoken";
+import { sendEmail } from "@/app/helperFunctions/mailer";
 
 export const options: NextAuthOptions = {
   debug: true,
@@ -12,34 +13,35 @@ export const options: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       async profile(profile) {
-        // If user signs in with Google, create or find a user in the database
+
         const existingUser = await prisma.user.findFirst({
           where: { email: profile.email },
         });
 
         if (!existingUser) {
-          // If no user exists, create a new user with the Google profile details
+          
+  
           const newUser = await prisma.user.create({
             data: {
               name: profile.name || "",
               email: profile.email || "",
               image: profile.picture || null,
+              isVerified:true
             },
           });
+         
 
-          // Generate a JWT token after creating a new user
           const jwtToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
-
+          
           return {
             id: newUser.id.toString(),
             name: newUser.name,
             email: newUser.email,
             image: newUser.image,
-            accessToken: jwtToken, // Include the JWT token
+            accessToken: jwtToken, 
           };
         }
 
-        // If user exists, generate JWT token for the existing user
         const jwtToken = jwt.sign({ userId: existingUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
 
         return {
@@ -47,7 +49,7 @@ export const options: NextAuthOptions = {
           name: existingUser.name,
           email: existingUser.email,
           image: existingUser.image,
-          accessToken: jwtToken, // Include the JWT token
+          accessToken: jwtToken, 
         };
       },
     }),
@@ -74,7 +76,7 @@ export const options: NextAuthOptions = {
           }
 
           const hashedPassword = await bcrypt.hash(password, 10);
-
+          
           const newUser = await prisma.user.create({
             data: {
               name: name || "",
@@ -82,8 +84,9 @@ export const options: NextAuthOptions = {
               password: hashedPassword,
             },
           });
-
-          // Generate a JWT token after signing up
+          //@ts-expect-error
+          sendEmail({ email: newUser.email, emailType: "VERIFY", userId: Number(newUser.id) });
+   
           const jwtToken = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
 
           return {

@@ -2,7 +2,7 @@
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { 
   Dialog, 
@@ -12,7 +12,9 @@ import {
   DialogTitle, 
   DialogTrigger 
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { useRole } from "@/app/contexts/RoleContext";
+import { useSession } from "next-auth/react";
+
 
 interface Coordinates {
   lat: number;
@@ -79,6 +81,9 @@ const GeometryPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const session=useSession()
+  const { role } = useRole();
+  const router=useRouter()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,7 +109,26 @@ const GeometryPage: React.FC = () => {
       fetchData();
     }
   }, [id]);
-
+  useEffect(() => {
+    if (!role) return;
+    if (role != "admin") {
+      window.location.href = "/";
+    }
+    
+  }, [role]);
+  useEffect(()=>{
+    async function fetchVerificationResponse(){
+      const response=await axios.post("http://localhost:3001/api/v1/isVerified",{
+        userId:session.data?.user.id
+      })
+      console.log(`${response.data}----------`)
+      if(!response.data.isVerified){
+        router.push("/sendEmailVerification")
+      }
+    }
+    fetchVerificationResponse()
+  
+  },[])
   const handleDelete = async (shapeId: number | undefined) => {
     if (!shapeId) return;
     try {
@@ -184,7 +208,7 @@ const GeometryPage: React.FC = () => {
       </div>
     );
   }
-
+ 
   return (
     <>
       {/* Error Dialog */}

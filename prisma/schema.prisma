@@ -18,6 +18,9 @@ model User {
   shapes Shape[] 
   location Location[]
   role Role @default(viewer) 
+  verifiedToken String? @default("")
+  verifiedTokenExpiry DateTime? 
+  isVerified Boolean?  @default(false)
 }
 enum Role{
   viewer

@@ -6,15 +6,10 @@ import L from "leaflet";
  * @returns A formatted string representing the southwest and northeast corners.
  */
 export const formatCoordinatesRectangle = (coords: L.LatLngBounds): string => {
-  //@ts-ignore
-  if (coords && coords._southWest && coords._northEast) {
-    //@ts-ignore
-    const { lat: lat1, lng: lng1 } = coords._southWest;
-    //@ts-ignore
-    const { lat: lat2, lng: lng2 } = coords._northEast;
-    return `SouthWest: Lat: ${lat1.toFixed(4)}, Lng: ${lng1.toFixed(
-      4
-    )}<br />NorthEast: Lat: ${lat2.toFixed(4)}, Lng: ${lng2.toFixed(4)}`;
+  if (coords) {
+    const southWest = coords.getSouthWest();
+    const northEast = coords.getNorthEast();
+    return `SouthWest: Lat: ${southWest.lat.toFixed(4)}, Lng: ${southWest.lng.toFixed(4)}<br />NorthEast: Lat: ${northEast.lat.toFixed(4)}, Lng: ${northEast.lng.toFixed(4)}`;
   }
 
   console.error("Invalid coordinates:", coords);

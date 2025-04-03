@@ -16,8 +16,8 @@ export async function POST(req: Request) {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-//@ts-expect-error
-    const {userId} = jwt.decode(session.user.accessToken) 
+
+    const {userId} = jwt.decode(session.user.accessToken) as { userId: number }
 
     if (!userId) {
       return NextResponse.json({ error: "User  not found" }, { status: 404 });
@@ -56,11 +56,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(shape, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving circle:", error);
     return NextResponse.json(
-      //@ts-expect-error
-      { error: error.message || "Failed to save circle" },
+      { error: error?.message || "Failed to save circle" },
       { status: 500 }
     );
   }
