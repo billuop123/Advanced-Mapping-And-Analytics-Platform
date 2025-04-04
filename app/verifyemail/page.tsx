@@ -2,6 +2,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 export default function VerifyEmailPage() {
   const [token, setToken] = useState("");
@@ -53,12 +54,12 @@ export default function VerifyEmailPage() {
               <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
               <p className="text-green-600 text-xl font-medium text-center">Your email has been verified successfully!</p>
               <p className="text-gray-500 mt-2 text-center">You can now return to the application.</p>
-              <a 
+              <Link 
                 href="/" 
                 className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
               >
                 Return to Homepage
-              </a>
+              </Link>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-8">

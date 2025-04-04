@@ -61,7 +61,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post("/api/v1/marker/getMarker", { email });
+      const response = await axios.get(`/api/v1/marker/getMarker?email=${email}`);
       if (response.status === 200) {
         setAllLocationArray(response.data.markers); // Update the state with fetched markers
       } else {

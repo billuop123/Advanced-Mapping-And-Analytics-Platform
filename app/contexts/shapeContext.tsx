@@ -41,20 +41,11 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     setError(null); // Reset error state before fetching
     try {
-      const [
-        rectanglesResponse,
-        polylinesResponse,
-        circlesResponse,
-        polygonsResponse,
-      ] = await Promise.all([
-        axios.post("http://localhost:3001/api/v1/rectangles/getRectangle", {
-          email,
-        }),
-        axios.post("http://localhost:3001/api/v1/line/getLine", { email }),
-        axios.get("http://localhost:3001/api/v1/circle/getCircle" ),
-        axios.post("http://localhost:3001/api/v1/polygons/getPolygon", {
-          email,
-        }),
+      const [rectanglesResponse, linesResponse, circlesResponse, polygonsResponse] = await Promise.all([
+        axios.get(`http://localhost:3001/api/v1/rectangles/getRectangle?email=${email}`),
+        axios.get(`http://localhost:3001/api/v1/line/getLine?email=${email}`),
+        axios.get(`http://localhost:3001/api/v1/circle/getCircle`),
+        axios.get(`http://localhost:3001/api/v1/polygons/getPolygon?email=${email}`)
       ]);
 
       const rectangles = rectanglesResponse.data.map((rect: any) =>
@@ -64,7 +55,7 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
         )
       );
 
-      const polylines = polylinesResponse.data.map(
+      const polylines = linesResponse.data.map(
         (polyline: any) => polyline.coords
       );
       const circles = circlesResponse.data.map((circle: any) => ({

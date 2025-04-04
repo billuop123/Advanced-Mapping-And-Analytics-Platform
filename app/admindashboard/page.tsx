@@ -74,9 +74,12 @@ export default function AdminDashboard() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [saving, setSaving] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
   const { role } = useRole();
   const router = useRouter();
-  const session=useSession()
+  const session = useSession();
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -136,6 +139,8 @@ useEffect(()=>{
       setPendingChanges((prev) =>
         prev.filter((change) => change.userId !== userId)
       );
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
     } catch (err) {
       setError(`Failed to delete ${users.find((u) => u.id === userId)?.name}`);
       console.error("Failed to delete user:", err);
@@ -174,6 +179,11 @@ useEffect(()=>{
     } finally {
       setSaving(false);
     }
+  };
+
+  const openDeleteDialog = (userId: number) => {
+    setUserToDelete(userId);
+    setDeleteDialogOpen(true);
   };
 
   const columns: ColumnDef<User>[] = [
@@ -233,66 +243,31 @@ useEffect(()=>{
         const user = row.original;
     
         return (
-          <Dialog>
-            <DropdownMenu>
-              <DropdownMenuTrigger 
-                asChild 
-                onClick={(e) => e.stopPropagation()}
+          <DropdownMenu>
+            <DropdownMenuTrigger 
+              asChild 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DropdownMenuItem 
+                className="text-red-600"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openDeleteDialog(user.id);
+                }}
               >
-                <Button variant="ghost" className="h-8 w-8 p-0">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                align="end" 
-                onClick={(e) => e.stopPropagation()}
-              >
-                <DialogTrigger asChild>
-                  <DropdownMenuItem 
-                    className="text-red-600"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <MdDelete className="mr-2" /> Delete User
-                  </DropdownMenuItem>
-                </DialogTrigger>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DialogContent onClick={(e) => e.stopPropagation()}>
-              <DialogHeader>
-                <DialogTitle>Delete User</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to delete the user {user.name}?
-                  This action cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button 
-                  variant="outline" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const dialog = e.currentTarget.closest('[role="dialog"]');
-                    dialog?.querySelector('[data-radix-dialog-close]')?.dispatchEvent(new Event('click'));
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteUser(user.id);
-                    const dialog = e.currentTarget.closest('[role="dialog"]');
-                    dialog?.querySelector('[data-radix-dialog-close]')?.dispatchEvent(new Event('click'));
-                  }}
-                >
-                  Delete
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                <MdDelete className="mr-2" /> Delete User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     }
@@ -313,6 +288,18 @@ useEffect(()=>{
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const handleBackToMap = () => {
+    // Clear any existing map instances
+    if (typeof window !== 'undefined') {
+      const mapContainer = document.querySelector('.leaflet-container');
+      if (mapContainer) {
+        mapContainer.remove();
+      }
+    }
+    // Navigate back to map
+    router.push("/");
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -323,11 +310,44 @@ useEffect(()=>{
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Delete User Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the user {users.find(u => u.id === userToDelete)?.name}?
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setDeleteDialogOpen(false);
+                setUserToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => userToDelete && handleDeleteUser(userToDelete)}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
-          <div onClick={()=>{window.location.href="/"}} className="flex hover:text-slate-700 items-center gap-1 cursor-pointer">
-             <HiArrowLongLeft />
+          <div 
+            onClick={handleBackToMap} 
+            className="flex hover:text-slate-700 items-center gap-1 cursor-pointer"
+          >
+            <HiArrowLongLeft />
             <h2>Map</h2>
           </div>
         

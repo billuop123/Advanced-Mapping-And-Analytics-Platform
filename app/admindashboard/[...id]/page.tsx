@@ -10,10 +10,12 @@ import {
   DialogDescription, 
   DialogHeader, 
   DialogTitle, 
-  DialogTrigger 
+  DialogTrigger,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { useRole } from "@/app/contexts/RoleContext";
 import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
 
 
 interface Coordinates {
@@ -81,6 +83,8 @@ const GeometryPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isErrorDialogOpen, setIsErrorDialogOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [shapeToDelete, setShapeToDelete] = useState<number | null>(null);
   const session=useSession()
   const { role } = useRole();
   const router=useRouter()
@@ -114,21 +118,31 @@ const GeometryPage: React.FC = () => {
     if (role != "admin") {
       window.location.href = "/";
     }
-    
   }, [role]);
-  useEffect(()=>{
-    async function fetchVerificationResponse(){
-      const response=await axios.post("http://localhost:3001/api/v1/isVerified",{
-        userId:session.data?.user.id
-      })
-      console.log(`${response.data}----------`)
-      if(!response.data.isVerified){
-        router.push("/sendEmailVerification")
+
+  useEffect(() => {
+    if (!session.data!.user.id) return;
+    
+    async function fetchVerificationResponse() {
+      try {
+        const response = await axios.post("http://localhost:3001/api/v1/isVerified", {
+          userId: session.data!.user.id
+        });
+        
+        // Check if the response has the expected structure
+        if (response.data && typeof response.data.isVerified === 'boolean') {
+          if (!response.data.isVerified) {
+            router.push("/sendEmailVerification");
+          }
+        }
+      } catch (error) {
+        console.error("Error checking verification status:", error);
       }
     }
-    fetchVerificationResponse()
-  
-  },[])
+
+    fetchVerificationResponse();
+  }, [session.data!.user.id, router]);
+
   const handleDelete = async (shapeId: number | undefined) => {
     if (!shapeId) return;
     try {
@@ -139,6 +153,8 @@ const GeometryPage: React.FC = () => {
         polygonInfo:
           prevData?.polygonInfo.filter((shape) => shape.id !== shapeId) || [],
       }));
+      setDeleteConfirmOpen(false);
+      setShapeToDelete(null);
     } catch (err) {
       const errorMessage = err instanceof Error
         ? err.message
@@ -146,6 +162,11 @@ const GeometryPage: React.FC = () => {
       setError(errorMessage);
       setIsErrorDialogOpen(true);
     }
+  };
+
+  const openDeleteConfirm = (shapeId: number) => {
+    setShapeToDelete(shapeId);
+    setDeleteConfirmOpen(true);
   };
 
   // Initialize shape counts with 0 for each type
@@ -211,194 +232,224 @@ const GeometryPage: React.FC = () => {
  
   return (
     <>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this shape? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteConfirmOpen(false);
+                setShapeToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => handleDelete(shapeToDelete!)}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Error Dialog */}
       <Dialog open={isErrorDialogOpen} onOpenChange={setIsErrorDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Error</DialogTitle>
-            <DialogDescription>
-              {error}
-            </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+            <DialogDescription>{error}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setIsErrorDialogOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        <div className="p-6 max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Geometry Information Display</h1>
+      <div className="p-6 max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Geometry Information Display</h1>
 
-          {/* User Information */}
-          <section className="mb-8 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">User Information</h2>
-            <div className="flex items-center gap-4">
-              <Image
-                width={12}
-                height={12}
-                src={data.polygonInfo[0].user.image}
-                alt={data.polygonInfo[0].user.name}
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <p className="font-medium">{data.polygonInfo[0].user.name}</p>
-                <p className="text-gray-600">{data.polygonInfo[0].user.email}</p>
-                <p className="text-gray-600">
-                  Role: {data.polygonInfo[0].user.role}
-                </p>
+        {/* User Information */}
+        <section className="mb-8 bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">User Information</h2>
+          <div className="flex items-center gap-4">
+            <Image
+              width={12}
+              height={12}
+              src={data.polygonInfo[0].user.image}
+              alt={data.polygonInfo[0].user.name}
+              className="w-12 h-12 rounded-full"
+            />
+            <div>
+              <p className="font-medium">{data.polygonInfo[0].user.name}</p>
+              <p className="text-gray-600">{data.polygonInfo[0].user.email}</p>
+              <p className="text-gray-600">
+                Role: {data.polygonInfo[0].user.role}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Shape Statistics */}
+        <section className="mb-8 bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">Shape Distribution</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(shapeCounts).map(([type, count]) => (
+              <div key={type} className="bg-gray-50 p-4 rounded">
+                <h3 className="font-medium">{type}</h3>
+                <p className="text-2xl font-bold">{count}</p>
               </div>
-            </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Detailed Shape Information (only shown if there are shapes) */}
+        {hasShapes && (
+          <section className="bg-white p-4 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">
+              Detailed Shape Information
+            </h2>
+
+            {rectangles && rectangles.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Rectangles</h3>
+                {rectangles.map((shape, index) => (
+                  <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
+                    <p className="font-medium">
+                      Rectangle ID: {shape.rectangle?.id}
+                    </p>
+                    <p className="font-medium">
+                      Shape ID: {shape.rectangle?.shapeId}
+                    </p>
+                    <p className="font-medium">
+                      Date: {new Date(shape.date).toLocaleString()}
+                    </p>
+                    <div className="mt-2">
+                      <p className="font-medium">Bounds:</p>
+                      <p className="text-sm">
+                        Northeast: ({shape.rectangle?.bounds.northeast.lat},{" "}
+                        {shape.rectangle?.bounds.northeast.lng})
+                      </p>
+                      <p className="text-sm">
+                        Southwest: ({shape.rectangle!.bounds.southwest.lat},{" "}
+                        {shape.rectangle?.bounds.southwest.lng})
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => openDeleteConfirm(shape.rectangle?.shapeId!)}
+                      className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {circles && circles.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Circles</h3>
+                {circles.map((shape, index) => (
+                  <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
+                    <p className="font-medium">Circle ID: {shape.circle?.id}</p>
+                    <p className="font-medium">
+                      Shape ID: {shape.circle?.shapeId}
+                    </p>
+                    <p className="font-medium">
+                      Date: {new Date(shape.date).toLocaleString()}
+                    </p>
+                    <div className="mt-2">
+                      <p className="font-medium">Center:</p>
+                      <p className="text-sm">
+                        Center: ({shape.circle?.center.lat},{" "}
+                        {shape.circle?.center.lng})
+                      </p>
+                      <p className="font-medium">Radius:</p>
+                      <p className="text-sm">{shape.circle?.radius}</p>
+                    </div>
+                    <button
+                      onClick={() => openDeleteConfirm(shape.circle?.shapeId!)}
+                      className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {polygons && polygons.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Polygons</h3>
+                {polygons.map((shape, index) => (
+                  <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
+                    <p className="font-medium">Polygon ID: {shape.polygon?.id}</p>
+                    <p className="font-medium">
+                      Shape ID: {shape.polygon?.shapeId}
+                    </p>
+                    <p className="font-medium">
+                      Date: {new Date(shape.date).toLocaleString()}
+                    </p>
+                    <div className="mt-2">
+                      <p className="font-medium">Coordinates:</p>
+                      {shape.polygon?.coords.map((coord, idx) => (
+                        <p key={idx} className="text-sm">
+                          Point {idx + 1}: ({coord.lat}, {coord.lng})
+                        </p>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => openDeleteConfirm(shape.polygon?.shapeId!)}
+                      className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {lines && lines.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Lines</h3>
+                {lines.map((shape, index) => (
+                  <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
+                    <p className="font-medium">Line ID: {shape.polyline?.id}</p>
+                    <p className="font-medium">
+                      Shape ID: {shape.polyline?.shapeId}
+                    </p>
+                    <p className="font-medium">
+                      Date: {new Date(shape.date).toLocaleString()}
+                    </p>
+                    <div className="mt-2">
+                      <p className="font-medium">Coordinates:</p>
+                      {shape.polyline?.coords.map((coord, idx) => (
+                        <p key={idx} className="text-sm">
+                          Point {idx + 1}: ({coord.lat}, {coord.lng})
+                        </p>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => openDeleteConfirm(shape.polyline?.shapeId!)}
+                      className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
-
-          {/* Shape Statistics */}
-          <section className="mb-8 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Shape Distribution</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {Object.entries(shapeCounts).map(([type, count]) => (
-                <div key={type} className="bg-gray-50 p-4 rounded">
-                  <h3 className="font-medium">{type}</h3>
-                  <p className="text-2xl font-bold">{count}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Detailed Shape Information (only shown if there are shapes) */}
-          {hasShapes && (
-            <section className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
-                Detailed Shape Information
-              </h2>
-
-              {rectangles && rectangles.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">Rectangles</h3>
-                  {rectangles.map((shape, index) => (
-                    <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                      <p className="font-medium">
-                        Rectangle ID: {shape.rectangle?.id}
-                      </p>
-                      <p className="font-medium">
-                        Shape ID: {shape.rectangle?.shapeId}
-                      </p>
-                      <p className="font-medium">
-                        Date: {new Date(shape.date).toLocaleString()}
-                      </p>
-                      <div className="mt-2">
-                        <p className="font-medium">Bounds:</p>
-                        <p className="text-sm">
-                          Northeast: ({shape.rectangle?.bounds.northeast.lat},{" "}
-                          {shape.rectangle?.bounds.northeast.lng})
-                        </p>
-                        <p className="text-sm">
-                          Southwest: ({shape.rectangle!.bounds.southwest.lat},{" "}
-                          {shape.rectangle?.bounds.southwest.lng})
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(shape.rectangle?.shapeId)}
-                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {circles && circles.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">Circles</h3>
-                  {circles.map((shape, index) => (
-                    <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                      <p className="font-medium">Circle ID: {shape.circle?.id}</p>
-                      <p className="font-medium">
-                        Shape ID: {shape.circle?.shapeId}
-                      </p>
-                      <p className="font-medium">
-                        Date: {new Date(shape.date).toLocaleString()}
-                      </p>
-                      <div className="mt-2">
-                        <p className="font-medium">Center:</p>
-                        <p className="text-sm">
-                          Center: ({shape.circle?.center.lat},{" "}
-                          {shape.circle?.center.lng})
-                        </p>
-                        <p className="font-medium">Radius:</p>
-                        <p className="text-sm">{shape.circle?.radius}</p>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(shape.circle?.shapeId)}
-                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {polygons && polygons.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">Polygons</h3>
-                  {polygons.map((shape, index) => (
-                    <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                      <p className="font-medium">Polygon ID: {shape.polygon?.id}</p>
-                      <p className="font-medium">
-                        Shape ID: {shape.polygon?.shapeId}
-                      </p>
-                      <p className="font-medium">
-                        Date: {new Date(shape.date).toLocaleString()}
-                      </p>
-                      <div className="mt-2">
-                        <p className="font-medium">Coordinates:</p>
-                        {shape.polygon?.coords.map((coord, idx) => (
-                          <p key={idx} className="text-sm">
-                            Point {idx + 1}: ({coord.lat}, {coord.lng})
-                          </p>
-                        ))}
-                      </div>
-                      <button
-                        onClick={() => handleDelete(shape.polygon?.shapeId)}
-                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {lines && lines.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">Lines</h3>
-                  {lines.map((shape, index) => (
-                    <div key={index} className="mb-4 p-4 bg-gray-50 rounded">
-                      <p className="font-medium">Line ID: {shape.polyline?.id}</p>
-                      <p className="font-medium">
-                        Shape ID: {shape.polyline?.shapeId}
-                      </p>
-                      <p className="font-medium">
-                        Date: {new Date(shape.date).toLocaleString()}
-                      </p>
-                      <div className="mt-2">
-                        <p className="font-medium">Coordinates:</p>
-                        {shape.polyline?.coords.map((coord, idx) => (
-                          <p key={idx} className="text-sm">
-                            Point {idx + 1}: ({coord.lat}, {coord.lng})
-                          </p>
-                        ))}
-                      </div>
-                      <button
-                        onClick={() => handleDelete(shape.polyline?.shapeId)}
-                        className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
-        </div>
+        )}
+      </div>
     </>
   );
 };

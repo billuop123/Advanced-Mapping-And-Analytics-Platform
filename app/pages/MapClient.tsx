@@ -32,6 +32,7 @@ export default function MapClient({ ref }: { ref: any }) {
   const [tileLayerUrl, setTileLayerUrl] = useState(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
+  const [selectedMapType, setSelectedMapType] = useState("Default");
   const { role } = useRole();
   const session=useSession()
   console.log(session.data)
@@ -68,23 +69,13 @@ export default function MapClient({ ref }: { ref: any }) {
           url={tileLayerUrl}
         />
 
-        <div
-          style={{
-            position: "absolute",
-            top: "10px",
-            left: "10px",
-            zIndex: 1000,
-            backgroundColor: "white",
-            padding: "5px",
-            borderRadius: "5px",
-            boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-white rounded-lg shadow-lg">
           <select
+            value={selectedMapType}
             onChange={(e) => {
               const selectedValue = e.target.value;
               e.stopPropagation();
+              setSelectedMapType(selectedValue);
 
               if (selectedValue === "Humanitarian") {
                 setTileLayerUrl(
@@ -98,12 +89,18 @@ export default function MapClient({ ref }: { ref: any }) {
                 setTileLayerUrl(
                   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 );
+              } else if (selectedValue === "Satellite") {
+                setTileLayerUrl(
+                  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+                );
               }
             }}
+            className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="Default">Default</option>
             <option value="Humanitarian">Humanitarian</option>
             <option value="Topographic">Topographic</option>
+            <option value="Satellite">Satellite</option>
           </select>
         </div>
 

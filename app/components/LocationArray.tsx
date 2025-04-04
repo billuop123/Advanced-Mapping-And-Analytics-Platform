@@ -1,7 +1,7 @@
 import React from "react";
 import { Marker, Popup } from "react-leaflet"; // Assuming you're using react-leaflet
 
-import { customIconFunction, popupContentStyle } from "../api/config";
+import { customIconFunction, popupContentStyle, deleteButtonStyle } from "../api/config";
 import { useLocationContext } from "../contexts/LocationContext";
 import axios from "axios";
 import { useUser } from "../contexts/LoginContext";
@@ -37,23 +37,18 @@ export const LocationArray = () => {
     >
       <Popup>
         <div style={popupContentStyle}>
-          <strong>{location.description}</strong>
-          <br />
-          <strong>Type:</strong> {location.type}
-          <br />
-          <strong>Latitude:</strong>{" "}
-          {parseFloat(location.latitude.toString()).toFixed(6)}
-          <br />
-          <strong>Longitude:</strong> {location.longitude}
-          <br />
+          <div style={{ marginBottom: "8px" }}>
+            <strong>{location.description}</strong>
+            <br />
+            <strong>Type:</strong> {location.type}
+            <br />
+            <strong>Latitude:</strong>{" "}
+            {parseFloat(location.latitude.toString()).toFixed(6)}
+            <br />
+            <strong>Longitude:</strong> {location.longitude}
+          </div>
           <button
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              border: "none",
-              padding: "5px",
-              cursor: "pointer",
-            }}
+            style={deleteButtonStyle}
             onClick={() => {
               handleDeleteMarker(location.latitude, location.longitude);
             }}

@@ -15,6 +15,37 @@ export const popupContentStyle = {
   boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
   fontSize: "14px",
   color: "#333",
+  minWidth: "200px",
+};
+
+export const deleteButtonStyle = {
+  backgroundColor: "#ef4444",
+  color: "white",
+  border: "none",
+  padding: "8px 16px",
+  borderRadius: "6px",
+  cursor: "pointer",
+  marginTop: "8px",
+  fontSize: "14px",
+  width: "100%",
+  textAlign: "center",
+  transition: "all 0.2s ease-in-out",
+  fontWeight: "500",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  display: "block",
+  textDecoration: "none",
+  outline: "none"
+};
+
+export const deleteButtonHoverStyle = {
+  backgroundColor: "#dc2626",
+  transform: "translateY(-1px)",
+  boxShadow: "0 4px 6px rgba(0,0,0,0.1)"
+};
+
+export const deleteButtonActiveStyle = {
+  transform: "translateY(0)",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
 };
 
 export const dropupMenuStyle = {

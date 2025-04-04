@@ -1,41 +1,32 @@
-import { options } from "@/app/api/auth/[...nextauth]/route";
+import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
-import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken"
-export async function POST(req: NextRequest) {
+import { options } from "@/app/api/auth/[...nextauth]/route";
+import jwt from "jsonwebtoken";
+
+export async function GET(req: Request) {
   try {
     const session = await getServerSession(options);
-                          
-                        
-                            if (!session) {
-                              return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-                            }
-                       
-                            const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
-
-
- 
-
-    if (!userId) {
-      return NextResponse.json(
-        { message: "No user found with the provided email" },
-        { status: 404 }
-      );
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const admins = await prisma.user.findMany({ where: { role: "admin" } });
-    const adminIds = admins.map((admin) => admin.id);
+
+    const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
+    if (!userId) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const markers = await prisma.location.findMany({
       where: {
-        userId: { in: [...adminIds, userId] },
+        userId: userId,
       },
     });
 
     return NextResponse.json({ markers }, { status: 200 });
-  } catch (err) {
-    console.error("Error fetching markers:", err);
+  } catch (error:any) {
+    console.error("Error fetching markers:", error);
     return NextResponse.json(
-      { message: "An error occurred while fetching markers" },
+      { error: `Failed to fetch markers ${error.message}` },
       { status: 500 }
     );
   }
