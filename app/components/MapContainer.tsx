@@ -88,7 +88,7 @@ const MapDashboardContainer = () => {
         }}
       >
         <div className="p-6 h-full overflow-y-auto">
-          {isDashboardVisible && <Dashboard />}
+        {isDashboardVisible && <Dashboard />}
         </div>
 
         {/* Arrow Icon (Middle Right of Dashboard) */}
