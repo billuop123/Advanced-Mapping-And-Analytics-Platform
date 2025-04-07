@@ -42,10 +42,10 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null); // Reset error state before fetching
     try {
       const [rectanglesResponse, linesResponse, circlesResponse, polygonsResponse] = await Promise.all([
-        axios.get(`http://localhost:3001/api/v1/rectangles/getRectangle?email=${email}`),
-        axios.get(`http://localhost:3001/api/v1/line/getLine?email=${email}`),
+        axios.get(`http://localhost:3001/api/v1/rectangles/getRectangle`),
+        axios.get(`http://localhost:3001/api/v1/line/getLine`),
         axios.get(`http://localhost:3001/api/v1/circle/getCircle`),
-        axios.get(`http://localhost:3001/api/v1/polygons/getPolygon?email=${email}`)
+        axios.get(`http://localhost:3001/api/v1/polygons/getPolygon`)
       ]);
 
       const rectangles = rectanglesResponse.data.map((rect: any) =>
