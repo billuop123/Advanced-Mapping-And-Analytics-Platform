@@ -11,22 +11,26 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
+    const { userId, role } = jwt.decode(session.user.accessToken) as { userId: number; role: string };
     if (!userId) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // If user is admin, fetch all polylines
+    if (role === "admin") {
+      const polylines = await prisma.polyline.findMany({
+        include: { shape: true },
+      });
+      return NextResponse.json(polylines, { status: 200 });
+    }
+
+    // For viewers and editors, fetch all polylines
     const polylines = await prisma.polyline.findMany({
-      where: {
-        shape: {
-          userId: userId,
-        },
-      },
       include: { shape: true },
     });
 
     return NextResponse.json(polylines, { status: 200 });
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Error fetching polylines:", error);
     return NextResponse.json(
       { error: `Failed to fetch polylines ${error.message}` },

@@ -16,15 +16,26 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // const polygons = await prisma.polygon.findMany({
+    //   where: {
+    //     shape: {
+    //       userId: userId,
+    //     },
+    //   },
+    //   include: { shape: true },
+    // });
+    const admins = await prisma.user.findMany({ where: { role: "admin" } });
+    const adminIds = admins.map((admin) => admin.id);
+
+    // Fetch polygons for user and admins
     const polygons = await prisma.polygon.findMany({
       where: {
         shape: {
-          userId: userId,
+          userId: { in: [...adminIds, userId] },
         },
       },
       include: { shape: true },
     });
-
     return NextResponse.json(polygons, { status: 200 });
   } catch (error:any) {
     console.error("Error fetching polygons:", error);

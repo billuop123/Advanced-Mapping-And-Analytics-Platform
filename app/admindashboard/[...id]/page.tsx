@@ -121,6 +121,7 @@ const GeometryPage: React.FC = () => {
   }, [role]);
 
   useEffect(() => {
+   if(!session.data) return;
     if (!session.data!.user.id) return;
     
     async function fetchVerificationResponse() {
@@ -141,7 +142,7 @@ const GeometryPage: React.FC = () => {
     }
 
     fetchVerificationResponse();
-  }, [session.data!.user.id, router]);
+  }, [router]);
 
   const handleDelete = async (shapeId: number | undefined) => {
     if (!shapeId) return;
