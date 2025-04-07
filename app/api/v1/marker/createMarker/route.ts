@@ -15,10 +15,10 @@ export async function POST(req: NextRequest) {
                     const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
     const { newLocation } = await req.json();
    
-    // Find the user by email
+
   
 
-    // If no user is found, return an error response
+
     if (!userId) {
       return NextResponse.json(
         { message: "No user found with the provided email" },
@@ -26,18 +26,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a new location in the database
     const newMarker = await prisma.location.create({
       data: {
         userId: userId,
-        latitude: newLocation.latitude, // Access latitude directly
-        longitude: newLocation.longitude, // Access longitude directly
-        description: newLocation.description, // Use name or description
+        latitude: newLocation.latitude, 
+        longitude: newLocation.longitude, 
+        description: newLocation.description, 
         type: newLocation.type,
       },
     });
 
-    // Return the newly created location
+
     return NextResponse.json({ newMarker }, { status: 201 });
   } catch (err) {
     console.error("Error creating location:", err);

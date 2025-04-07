@@ -130,7 +130,7 @@ const GeometryPage: React.FC = () => {
           userId: session.data!.user.id
         });
         
-        // Check if the response has the expected structure
+
         if (response.data && typeof response.data.isVerified === 'boolean') {
           if (!response.data.isVerified) {
             router.push("/sendEmailVerification");

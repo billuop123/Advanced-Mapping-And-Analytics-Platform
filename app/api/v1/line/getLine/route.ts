@@ -24,7 +24,7 @@ export async function GET(req: Request) {
       return NextResponse.json(polylines, { status: 200 });
     }
 
-    // For viewers and editors, fetch all polylines
+
     const polylines = await prisma.polyline.findMany({
       include: { shape: true },
     });
