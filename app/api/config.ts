@@ -18,7 +18,7 @@ export const popupContentStyle = {
   minWidth: "200px",
 };
 
-export const deleteButtonStyle = {
+export const deleteButtonStyle: React.CSSProperties = {
   backgroundColor: "#ef4444",
   color: "white",
   border: "none",
@@ -28,7 +28,7 @@ export const deleteButtonStyle = {
   marginTop: "8px",
   fontSize: "14px",
   width: "100%",
-  textAlign: "center",
+  textAlign: "center" as const,
   transition: "all 0.2s ease-in-out",
   fontWeight: "500",
   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",

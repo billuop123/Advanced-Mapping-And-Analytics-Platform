@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import { useLocationContext } from "../contexts/LocationContext";
 import { usePosition } from "../contexts/PositionContext";
 import axios from "axios";
@@ -23,15 +24,22 @@ const Dashboard = () => {
   const [showDashboard, setShowDashboard] = useState<boolean>(true);
   const { email } = useUser();
   const { role } = useRole();
-  
-  const typeOptions = [
-    { id: 1, name: "Hospital", icon: "/hospital.svg" },
-    { id: 2, name: "Temple", icon: "/temple.svg" },
-    { id: 3, name: "School", icon: "/school.svg" },
-    { id: 4, name: "Mall", icon: "/mall.svg" },
-    { id: 5, name: "Park", icon: "/park.svg" },
-    { id: 6, name: "Others", icon: "/Others.svg" },
-  ];
+  const [typeOptions, setTypeOptions] = useState<{ id: number; name: string; icon: string }[]>([
+       { id: 100, name: "Hospital", icon: "/hospital.svg" },
+       { id: 200, name: "Temple", icon: "/temple.svg" },
+       { id: 300, name: "School", icon: "/school.svg" },
+       { id: 400, name: "Mall", icon: "/mall.svg" },
+      { id: 500, name: "Park", icon: "/park.svg" },
+       { id: 600, name: "Others", icon: "/Others.svg" },
+     ]);
+  // const typeOptions = [
+  //   { id: 1, name: "Hospital", icon: "/hospital.svg" },
+  //   { id: 2, name: "Temple", icon: "/temple.svg" },
+  //   { id: 3, name: "School", icon: "/school.svg" },
+  //   { id: 4, name: "Mall", icon: "/mall.svg" },
+  //   { id: 5, name: "Park", icon: "/park.svg" },
+  //   { id: 6, name: "Others", icon: "/Others.svg" },
+  // ];
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +62,13 @@ const Dashboard = () => {
       console.error("Error creating marker:", error);
     }
   };
-  
+  useEffect(() => {
+    const fetchSVGs = async () => {
+      const response = await axios.get("http://localhost:3001/api/v1/getSvg");
+      setTypeOptions([...typeOptions,...response.data]);
+    };
+    fetchSVGs();
+  }, []);
   return (
     <div className="flex justify-center items-center min-h-screen bg-white p-4">
       <Card className="w-full max-w-md shadow-lg border border-gray-200" onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>

@@ -486,6 +486,9 @@ useEffect(()=>{
           </div>
         </div>
       </div>
+      <button onClick={()=>{
+        router.push("/admindashboard/uploadFile")
+      }}>Upload File</button>
     </div>
   );
 }

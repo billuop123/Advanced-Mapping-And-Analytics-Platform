@@ -85,3 +85,8 @@ model Location {
   user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
 
 }
+model SVG{
+  id Int @id @default(autoincrement())
+  name String
+  icon String
+}
