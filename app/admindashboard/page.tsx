@@ -52,6 +52,7 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import { useSession } from "next-auth/react";
+// import UploadLocation from "@/components/UploadLocation";
 
 interface User {
   id: number;
@@ -343,12 +344,20 @@ useEffect(()=>{
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
-          <div 
-            onClick={handleBackToMap} 
-            className="flex hover:text-slate-700 items-center gap-1 cursor-pointer"
-          >
-            <HiArrowLongLeft />
-            <h2>Map</h2>
+          <div className="flex items-center gap-4">
+            <div 
+              onClick={handleBackToMap} 
+              className="flex hover:text-slate-700 items-center gap-1 cursor-pointer"
+            >
+              <HiArrowLongLeft />
+              <h2>Map</h2>
+            </div>
+            <Button
+              onClick={() => router.push("/admindashboard/uploadFile")}
+            
+            >
+              Upload Location Icon
+            </Button>
           </div>
         
           <Button
@@ -486,9 +495,6 @@ useEffect(()=>{
           </div>
         </div>
       </div>
-      <button onClick={()=>{
-        router.push("/admindashboard/uploadFile")
-      }}>Upload File</button>
     </div>
   );
 }

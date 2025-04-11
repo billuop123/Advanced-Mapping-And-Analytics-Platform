@@ -4,16 +4,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Upload, FileIcon, XCircle } from "lucide-react";
+import { Loader2, Upload, FileIcon, XCircle, MapPin } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface UploadFileProps {
+interface UploadLocationProps {
   onUploadSuccess?: (filename: string) => void;
   onUploadError?: (error: string) => void;
 }
 
-export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFileProps) {
+export default function UploadLocation({ onUploadSuccess, onUploadError }: UploadLocationProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [name, setName] = useState("");
@@ -98,12 +98,17 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
   };
 
   return (
-    <Card className="w-full border border-gray-200 shadow-md rounded-xl overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-6 py-5">
-        <CardTitle className="text-2xl font-bold text-gray-800">Upload SVG Icon</CardTitle>
-        <CardDescription className="text-gray-600 mt-1">
-          Add an SVG icon to your collection for use in your applications
-        </CardDescription>
+    <Card className="w-full max-w-2xl mx-auto border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 border-b border-gray-200 px-6 py-5">
+        <div className="flex items-center gap-3">
+          <MapPin className="h-8 w-8 text-white" />
+          <div>
+            <CardTitle className="text-2xl font-bold text-white">Upload Location Icon</CardTitle>
+            <CardDescription className="text-blue-100 mt-1">
+              Add a custom SVG icon for your map locations
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-6 bg-white">
         <div className="space-y-6">
@@ -181,7 +186,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. dashboard-icon, user-profile"
+              placeholder="e.g. restaurant-icon, park-icon"
               disabled={isUploading || !file}
               className="focus-visible:ring-blue-500 shadow-sm"
               maxLength={50}
@@ -200,7 +205,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
           <Button
             onClick={handleUpload}
             disabled={!file || !name || isUploading}
-            className="w-full bg-slate-600 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg shadow-sm transition-all duration-200 ease-in-out hover:shadow"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg shadow-sm transition-all duration-200 ease-in-out hover:shadow"
           >
             {isUploading ? (
               <div className="flex items-center justify-center gap-2">
@@ -210,7 +215,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
             ) : (
               <div className="flex items-center justify-center gap-2">
                 <Upload className="h-5 w-5" />
-                <span>Upload Icon</span>
+                <span>Upload Location Icon</span>
               </div>
             )}
           </Button>
@@ -218,4 +223,4 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
       </CardContent>
     </Card>
   );
-}
+} 
