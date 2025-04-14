@@ -7,10 +7,12 @@ import L from "leaflet";
 import { formatCoordinatesPolygon } from "../helperFunctions/formattedCoords";
 import { popupContentStyle } from "../api/config";
 import { LatLngExpression, LatLngBounds } from "leaflet";
+import { useShapes } from "../contexts/shapeContext";
 
 export default function MapView({ shapeCoords, shapeType }: { shapeCoords: any, shapeType: string }) {
   const mapRef = useRef<L.Map | null>(null);
   let position: LatLngExpression = [0, 0];
+ 
 
   // Set default position to [0, 0] if shapeCoords is not available
   // if(shapeType === "polygon"){

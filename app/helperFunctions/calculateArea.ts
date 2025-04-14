@@ -18,15 +18,14 @@ export const calculatePolygonArea = (
  */
 
 export const calculateRectangleArea = (bounds: LatLngBounds): number => {
-  const latLng1 = bounds.getNorthWest(); // Top-left corner
-  const latLng2 = bounds.getSouthEast(); // Bottom-right corner
+  const northWest = bounds.getNorthWest();
+  const northEast = bounds.getNorthEast();
+  const southEast = bounds.getSouthEast();
+  const southWest = bounds.getSouthWest();
 
-  // Calculate the width (distance between west and east edges)
-  const width = latLng1.distanceTo(latLng(latLng1.lat, latLng2.lng));
-
-  // Calculate the height (distance between north and south edges)
-  const height = latLng1.distanceTo(latLng(latLng2.lat, latLng1.lng));
-
-  // Return the area in square meters
-  return width * height;
+  // Create a polygon from the rectangle's corners
+  const polygon = [northWest, northEast, southEast, southWest, northWest];
+  
+  // Use Leaflet's geodesicArea method for accurate area calculation
+  return L.GeometryUtil.geodesicArea(polygon);
 };

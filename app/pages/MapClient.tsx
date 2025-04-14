@@ -24,7 +24,7 @@ import { LivePositionButton } from "../components/LivePosition.Button";
 import { LongitudeAndLatitudeInput } from "../components/LongitudeAndLatitudeInput";
 import { useRole } from "../contexts/RoleContext";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useShapes } from "../contexts/shapeContext";
 
 export default function MapClient({ ref }: { ref: any }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -37,7 +37,11 @@ export default function MapClient({ ref }: { ref: any }) {
   const { role } = useRole();
   const session = useSession();
   console.log(session.data);
+  const { fetchShapes } = useShapes();
 
+  useEffect(() => {
+    fetchShapes();
+  }, []);
   useEffect(() => {
     if (!sessionStorage.getItem('hasReloaded')) {
       sessionStorage.setItem('hasReloaded', 'true');

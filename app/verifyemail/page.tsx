@@ -55,10 +55,10 @@ export default function VerifyEmailPage() {
               <p className="text-green-600 text-xl font-medium text-center">Your email has been verified successfully!</p>
               <p className="text-gray-500 mt-2 text-center">You can now return to the application.</p>
               <Link 
-                href="/" 
+                href="/api/auth/signin" 
                 className="mt-6 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"
               >
-                Return to Homepage
+                Return to Signin
               </Link>
             </div>
           ) : error ? (

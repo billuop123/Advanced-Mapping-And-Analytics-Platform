@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
-import { useSession } from "next-auth/react";
 
 export type ShapesState = {
   polygons: LatLngExpression[][];
@@ -21,8 +20,8 @@ interface ShapeContextType {
   shapes: ShapesState;
   setShapes: React.Dispatch<React.SetStateAction<ShapesState>>;
   fetchShapes: () => Promise<void>;
-  loading: boolean; // Loading state
-  error: string | null; // Error state
+  loading: boolean;
+  error: string | null;
 }
 
 const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
@@ -30,16 +29,13 @@ const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
 export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { data } = useSession();
-  const email = data?.user?.email;
   const [shapes, setShapes] = useState<ShapesState>(initialShapes);
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchShapes = async () => {
-    if (!email) return; // Exit if email is not available
     setLoading(true);
-    setError(null); // Reset error state before fetching
+    setError(null);
     try {
       const [rectanglesResponse, linesResponse, circlesResponse, polygonsResponse] = await Promise.all([
         axios.get(`http://localhost:3001/api/v1/rectangles/getRectangle`),
@@ -81,11 +77,6 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
     }
   };
-
-  // Automatically fetch shapes when the session changes
-  useEffect(() => {
-    fetchShapes();
-  }, [email]);
 
   return (
     <ShapeContext.Provider
