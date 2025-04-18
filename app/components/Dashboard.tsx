@@ -10,9 +10,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HiArrowLongRight } from "react-icons/hi2";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Info, Building2, Church, GraduationCap, ShoppingBag, Trees, MapPin as MapPinIcon } from "lucide-react";
 
@@ -87,7 +87,7 @@ const Dashboard = () => {
           
           {role === "admin" && (
             <Link 
-              href="/admindashboard" 
+              href="/admindashboard/analytics" 
               className="flex items-center justify-center gap-2 p-2 mt-4 text-blue-700 hover:text-blue-900 font-medium rounded-md hover:bg-blue-100 transition-all"
               onClick={(e) => e.stopPropagation()}
               onMouseDown={(e) => e.stopPropagation()}

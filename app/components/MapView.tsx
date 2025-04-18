@@ -7,7 +7,6 @@ import L from "leaflet";
 import { formatCoordinatesPolygon } from "../helperFunctions/formattedCoords";
 import { popupContentStyle } from "../api/config";
 import { LatLngExpression, LatLngBounds } from "leaflet";
-import { useShapes } from "../contexts/shapeContext";
 
 export default function MapView({ shapeCoords, shapeType }: { shapeCoords: any, shapeType: string }) {
   const mapRef = useRef<L.Map | null>(null);

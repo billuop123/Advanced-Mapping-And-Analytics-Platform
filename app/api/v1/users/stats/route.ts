@@ -10,14 +10,22 @@ export async function GET() {
         if (!session) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
-
-        // Get total number of users
         const totalUsers = await prisma.user.count();
-
-        // Get total number of SVG uploads
+        const editorUsers = await prisma.user.count({
+            where: {
+                role: "editor"
+            }
+        });
+        const viewerUsers = await prisma.user.count({
+            where: {
+                role: "viewer"
+            }
+        });
         const totalSVGs = await prisma.sVG.count();
-
-        // Get admin information
+        const totalRectangles = await prisma.rectangle.count();
+        const totalCircles = await prisma.circle.count();
+        const totalLines = await prisma.polyline.count();
+        const totalPolygons = await prisma.polygon.count();
         const admin = await prisma.user.findFirst({
             where: {
                 email: session.user?.email
@@ -28,10 +36,16 @@ export async function GET() {
                 image: true
             }
         });
-
+        console.log(admin)
         return NextResponse.json({
             totalUsers,
+            editorUsers,
+            viewerUsers,
             totalSVGs,
+            totalRectangles,
+            totalCircles,
+            totalLines,
+            totalPolygons,
             adminName: admin?.name || "",
             adminEmail: admin?.email || "",
             adminImage: admin?.image || "/default.svg"

@@ -1,9 +1,11 @@
-import MapWrapper from "./pages/MapWrapper";
+import LandingPage from "./components/LandingPage";
+
 
 export default function Some() {
   return (
     <div>
-      <MapWrapper />
+      <LandingPage />
+      {/* <MapWrapper /> */}
     </div>
   );
 }

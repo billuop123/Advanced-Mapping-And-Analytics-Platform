@@ -90,7 +90,7 @@ export default function AdminDashboard() {
       const response=await axios.post("http://localhost:3001/api/v1/isVerified",{
         userId:session.data?.user.id
       })
-      console.log(`${response.data}----------`)
+     
       if(!response.data.isVerified){
         router.push("/sendEmailVerification")
       }
@@ -345,19 +345,19 @@ useEffect(()=>{
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
-            <div 
+            {/* <div 
               onClick={handleBackToMap} 
               className="flex hover:text-slate-700 items-center gap-1 cursor-pointer"
             >
               <HiArrowLongLeft />
               <h2>Map</h2>
-            </div>
-            <Button
+            </div> */}
+            {/* <Button
               onClick={() => router.push("/admindashboard/uploadFile")}
             
             >
               Upload Location Icon
-            </Button>
+            </Button> */}
           </div>
         
           <Button
@@ -408,8 +408,8 @@ useEffect(()=>{
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="editor">Editor</SelectItem>
-                <SelectItem value="viewer">Viewer</SelectItem>
+                <SelectItem value="editor">Editors</SelectItem>
+                <SelectItem value="viewer">Viewers</SelectItem>
               </SelectContent>
             </Select>
           </div>

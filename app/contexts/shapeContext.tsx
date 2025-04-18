@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+import { useSession } from "next-auth/react";
 
 export type ShapesState = {
   polygons: LatLngExpression[][];
@@ -29,11 +30,14 @@ const ShapeContext = createContext<ShapeContextType | undefined>(undefined);
 export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const { data } = useSession();
+  const email = data?.user?.email;
   const [shapes, setShapes] = useState<ShapesState>(initialShapes);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchShapes = async () => {
+    if (!email) return;
     setLoading(true);
     setError(null);
     try {
@@ -77,6 +81,10 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchShapes();
+  }, [email]);
 
   return (
     <ShapeContext.Provider
