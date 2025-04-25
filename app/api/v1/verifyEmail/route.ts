@@ -1,18 +1,34 @@
 import { prisma } from "@/app/services/prismaClient";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: NextRequest) {
   try {
-
     const reqBody = await request.json();
     const { token } = reqBody;
     console.log('-------------')
     console.log(token)
-    const user = await prisma.user.findFirst({
+
+    // Find all users with non-empty verifiedToken
+    const users = await prisma.user.findMany({
       where: {
-        verifiedToken: token, 
+        verifiedToken: {
+          not: null
+        }
       },
     });
+
+    // Find the user whose hashed token matches the incoming token
+    let user = null;
+    for (const potentialUser of users) {
+      if (potentialUser.verifiedToken) {
+        const isValidToken = await bcrypt.compare(token, potentialUser.verifiedToken);
+        if (isValidToken) {
+          user = potentialUser;
+          break;
+        }
+      }
+    }
 
     console.log(user);
 
@@ -32,7 +48,7 @@ export async function POST(request: NextRequest) {
       where: { id: user.id }, 
       data: {
         isVerified: true,
-        verifiedToken: "", 
+        verifiedToken: null, 
         verifiedTokenExpiry: null,
       },
     });

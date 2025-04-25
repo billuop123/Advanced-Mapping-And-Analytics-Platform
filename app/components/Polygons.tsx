@@ -12,7 +12,7 @@ interface ShapesState {
   circles: { center: LatLng; radius: number }[];
   polygons: LatLng[][];
   polylines: LatLng[][];
-  rectangles: LatLngBounds[]; // Use LatLngBounds instead of LatLng[][]
+  rectangles: LatLngBounds[]; 
 }
 export const Polygons = function () {
   const { shapes, setShapes } = useShapes();
@@ -36,7 +36,7 @@ export const Polygons = function () {
                     ? `<button id="delete-polygon-${index}" style="${JSON.stringify(deleteButtonStyle).replace(/"/g, "")}">
                         Delete
                       </button>`
-                    : ""; // Empty string if role is "viewer"
+                    : ""; 
 
                 const formattedCoords = formatCoordinatesPolygon(coords);
 

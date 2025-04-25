@@ -15,7 +15,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { data, status } = useSession();
   const email = data?.user?.email || null;
-  const photoUrl = data?.user?.image || null; // Ensure this is mapped correctly
+  const photoUrl = data?.user?.image || null; 
   const name = data?.user?.name || null;
 
   return (

@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { HiArrowLongLeft } from "react-icons/hi2";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -52,8 +51,6 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import { useSession } from "next-auth/react";
-// import UploadLocation from "@/components/UploadLocation";
-
 interface User {
   id: number;
   name: string;
@@ -288,19 +285,6 @@ useEffect(()=>{
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  const handleBackToMap = () => {
-    // Clear any existing map instances
-    if (typeof window !== 'undefined') {
-      const mapContainer = document.querySelector('.leaflet-container');
-      if (mapContainer) {
-        mapContainer.remove();
-      }
-    }
-    // Navigate back to map
-    router.push("/");
-  };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -345,19 +329,6 @@ useEffect(()=>{
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
-            {/* <div 
-              onClick={handleBackToMap} 
-              className="flex hover:text-slate-700 items-center gap-1 cursor-pointer"
-            >
-              <HiArrowLongLeft />
-              <h2>Map</h2>
-            </div> */}
-            {/* <Button
-              onClick={() => router.push("/admindashboard/uploadFile")}
-            
-            >
-              Upload Location Icon
-            </Button> */}
           </div>
         
           <Button

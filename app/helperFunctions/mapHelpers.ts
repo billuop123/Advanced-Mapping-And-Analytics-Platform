@@ -5,7 +5,7 @@ interface ShapesState {
   circles: { center: LatLng; radius: number }[];
   polygons: LatLng[][];
   polylines: LatLng[][];
-  rectangles: LatLngBounds[]; // Use LatLngBounds instead of LatLng[][]
+  rectangles: LatLngBounds[]; 
 }
 
 type SetShapes = React.Dispatch<React.SetStateAction<ShapesState>>;

@@ -82,11 +82,3 @@ export const customIconFunction = (type: string) => {
     shadowSize: [41, 41],
   });
 };
-//  export async function initialCheck(){
-//       const session = await getServerSession(options);
-//       //@ts-expect-error
-//       const {userId} = jwt.decode(session!.user.accessToken) 
-//       return {
-//         userId,session
-//       }
-//  }

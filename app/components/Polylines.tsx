@@ -11,7 +11,7 @@ interface ShapesState {
   circles: { center: LatLng; radius: number }[];
   polygons: LatLng[][];
   polylines: LatLng[][];
-  rectangles: LatLngBounds[]; // Use LatLngBounds instead of LatLng[][]
+  rectangles: LatLngBounds[]; 
 }
 export const Polylines = function () {
   const { shapes, setShapes } = useShapes();
@@ -31,7 +31,7 @@ export const Polylines = function () {
                   ? `<button id="delete-circle-${index}" style="background-color: red; color: white; border: none; padding: 5px; cursor: pointer;">
                         Delete
                       </button>`
-                  : ""; // Empty string if role is "viewer"
+                  : ""; 
               e.target
                 .bindPopup(
                   `<div style="${JSON.stringify(popupContentStyle).replace(

@@ -28,7 +28,7 @@ export function AnalyticsSidebar({
 }: AnalyticsSidebarProps) {
   return (
     <aside className={`bg-white dark:bg-slate-900 shadow-lg transition-all duration-300 ${isOpen ? 'w-72' : 'w-20'} h-full flex flex-col fixed left-0 top-0 border-r border-slate-200 dark:border-slate-800 z-10`}>
-      {/* Sidebar Header */}
+
       <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
         {isOpen ? (
           <h2 className="font-semibold text-lg text-slate-800 dark:text-white flex items-center gap-2">
@@ -42,7 +42,7 @@ export function AnalyticsSidebar({
         )}
       </div>
 
-      {/* Toggle Button */}
+
       <div className="relative">
         <Button 
           variant="outline" 
@@ -58,11 +58,11 @@ export function AnalyticsSidebar({
           )}
         </Button>
       </div>
-      
-      {/* Sidebar Content */}
+
+ 
       {isOpen ? (
         <div className="flex flex-col h-full">
-          {/* Analytics Cards */}
+
           <div className="p-4 space-y-4">
         
           
@@ -95,7 +95,7 @@ export function AnalyticsSidebar({
             </ul>
           </nav>
           
-          {/* Admin Profile */}
+
           <div className="mt-auto p-4 border-t border-slate-200 dark:border-slate-800">
             <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
               <div className="relative h-10 w-10 flex-shrink-0">
@@ -115,22 +115,22 @@ export function AnalyticsSidebar({
         </div>
       ) : (
         <div className="flex flex-col items-center py-6 h-full">
-          {/* Collapsed Analytics */}
+       
           <div className="space-y-6 mb-6">
-            {/* Collapsed Total Users */}
+        
             <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-950 rounded-lg flex flex-col items-center justify-center">
               <Users className="h-4 w-4 text-blue-600 dark:text-blue-400 mb-1" />
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{totalUsers}</span>
             </div>
             
-            {/* Collapsed Total SVGs */}
+      
             <div className="w-12 h-12 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-emerald-950 rounded-lg flex flex-col items-center justify-center">
               <Upload className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mb-1" />
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{totalSVGs}</span>
             </div>
           </div>
           
-          {/* Collapsed Navigation */}
+         
           <nav className="flex flex-col items-center space-y-4">
             <Link 
               href="/admindashboard/"
@@ -147,8 +147,7 @@ export function AnalyticsSidebar({
               <FileImage className="h-4 w-4 text-slate-600 dark:text-slate-400" />
             </Link>
           </nav>
-          
-          {/* Collapsed Admin Profile */}
+         
           <div className="mt-auto">
             <div className="relative h-8 w-8 mx-auto">
               <Image

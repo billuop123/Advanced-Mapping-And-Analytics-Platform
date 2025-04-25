@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -14,8 +14,13 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [emailError,setEmailError]=useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,11 +42,17 @@ export default function SignIn() {
     } finally {
       setIsLoading(false);
     }
-  }
+  } useEffect(() => {
+      if (email) {
+        setEmailError(validateEmail(email) ? null : "Please enter a valid email address");
+      } else {
+        setEmailError(null);
+      }
+    }, [email]);
 
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
-      {/* Map background image with overlay */}
+ 
       <div 
         className="absolute inset-0 bg-cover bg-center z-0" 
         style={{
@@ -92,6 +103,9 @@ export default function SignIn() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full"
                 />
+                 {emailError && (
+                  <p className="text-sm text-red-500 mt-1">{emailError}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -123,7 +137,7 @@ export default function SignIn() {
 
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !!emailError}
                 className="w-full"
               >
                 {isLoading ? (
@@ -145,7 +159,14 @@ export default function SignIn() {
                 Sign up
               </Link>
             </div>
-
+            <div className="mt-4 text-center">
+                <Link 
+                  href="/resetpassword" 
+                  className="text-sm font-medium text-blue-600 hover:underline hover:text-blue-700 transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -183,9 +204,11 @@ export default function SignIn() {
                 </svg>
                 Sign in with Google
               </Button>
+    
             </div>
           </CardContent>
         </Card>
+     
       </div>
     </div>
   );

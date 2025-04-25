@@ -93,7 +93,7 @@ export const options: NextAuthOptions = {
             id: newUser.id.toString(),
             name: newUser.name,
             email: newUser.email,
-            accessToken: jwtToken, // Generate and send the JWT token in accessToken
+            accessToken: jwtToken, 
           };
         } else {
           const user = await prisma.user.findFirst({
@@ -110,14 +110,14 @@ export const options: NextAuthOptions = {
             throw new Error("Invalid password");
           }
 
-          // Generate a JWT token after successful login
+       
           const jwtToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "yourSecretKey", { expiresIn: '1d' });
 
           return {
             id: user.id.toString(),
             name: user.name,
             email: user.email,
-            accessToken: jwtToken, // Include the JWT token in accessToken
+            accessToken: jwtToken, 
           };
         }
       }
@@ -140,7 +140,7 @@ export const options: NextAuthOptions = {
           ...session.user,
           id: token.id as string,
           accessToken: token.accessToken as string,
-          image: token.image as string, // Add JWT token to session
+          image: token.image as string, 
         };
       }
       return session;

@@ -1,17 +1,12 @@
-// install (please try to align the version of installed @nivo packages)
-// yarn add @nivo/bar
+
 import { ResponsiveBar } from '@nivo/bar'
 
-// make sure parent container have a defined height when using
-// responsive component, otherwise height will be 0 and
-// no chart will be rendered.
-// website examples showcase many properties,
-// you'll often use just a few of them.
+
 export const MyResponsiveBar = ({ data2 }: { data2: any }) => (
     <ResponsiveBar
       data={data2}
-      keys={['total']} // Use 'total' as the key
-      indexBy="role" // Use 'role' as the index
+      keys={['total']} 
+      indexBy="role"  
       margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
       padding={0.3}
       valueScale={{ type: 'linear' }}
@@ -21,7 +16,7 @@ export const MyResponsiveBar = ({ data2 }: { data2: any }) => (
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: 'Role',
+        legend: 'Location type',
         legendPosition: 'middle',
         legendOffset: 32,
         truncateTickAt: 0

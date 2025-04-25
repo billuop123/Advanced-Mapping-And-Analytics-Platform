@@ -68,6 +68,7 @@ export default function LandingPage() {
   const [totalLocations, setTotalLocations] = useState(0);
 
   useEffect(() => {
+    if(!session)return 
     const fetchSVGs = async () => {
       try {
         const response = await axios.get("http://localhost:3001/api/v1/getSvg");
@@ -77,7 +78,7 @@ export default function LandingPage() {
       }
     };
     fetchSVGs();
-  }, []);
+  }, [session]);
 useEffect(()=>{
   const pieData = locationData.map(location => ({
     role: location.type,

@@ -19,6 +19,8 @@ model User {
   location Location[]
   role Role @default(viewer) 
   verifiedToken String? @default("")
+  resetToken String? @default("")
+  resetTokenExpiry DateTime?
   verifiedTokenExpiry DateTime? 
   isVerified Boolean?  @default(false)
 }

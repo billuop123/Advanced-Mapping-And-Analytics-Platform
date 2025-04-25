@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 import L from "leaflet";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet/dist/leaflet.css";
@@ -25,6 +25,7 @@ import { LongitudeAndLatitudeInput } from "../components/LongitudeAndLatitudeInp
 import { useRole } from "../contexts/RoleContext";
 import { useSession } from "next-auth/react";
 import { useShapes } from "../contexts/shapeContext";
+import { useUser } from "../contexts/LoginContext";
 
 export default function MapClient({ ref }: { ref: any }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -35,13 +36,12 @@ export default function MapClient({ ref }: { ref: any }) {
   );
   const [selectedMapType, setSelectedMapType] = useState("Default");
   const { role } = useRole();
-  const session = useSession();
-  console.log(session.data);
+  const {email}=useUser()
   const { fetchShapes } = useShapes();
 
   useEffect(() => {
     fetchShapes();
-  }, []);
+  }, [email]);
   useEffect(() => {
     if (!sessionStorage.getItem('hasReloaded')) {
       sessionStorage.setItem('hasReloaded', 'true');
@@ -72,12 +72,12 @@ export default function MapClient({ ref }: { ref: any }) {
   }, [mapRef]);
 
   return (
-    <div>
+    <div className="h-full w-full">
       <MapContainer
         center={position}
         zoom={10}
         scrollWheelZoom={true}
-        style={{ height: "100vh", width: "100%" }}
+        style={{ height: "100%", width: "100%", position: "relative" }}
         ref={mapRef}
       >
         <TileLayer

@@ -11,13 +11,6 @@ import { LatLngExpression, LatLngBounds } from "leaflet";
 export default function MapView({ shapeCoords, shapeType }: { shapeCoords: any, shapeType: string }) {
   const mapRef = useRef<L.Map | null>(null);
   let position: LatLngExpression = [0, 0];
- 
-
-  // Set default position to [0, 0] if shapeCoords is not available
-  // if(shapeType === "polygon"){
-  //  position: LatLngExpression = shapeCoords?.[0] 
-  //   ? [shapeCoords[0].lat, shapeCoords[0].lng] 
-  //   : [0, 0];}
   useEffect(()=>{
     if(shapeType === "polygon"){
       position = [shapeCoords[0].lat, shapeCoords[0].lng] as LatLngExpression;

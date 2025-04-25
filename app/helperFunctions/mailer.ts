@@ -1,10 +1,10 @@
-
 import { prisma } from "../services/prismaClient";
 import bcrypt from "bcryptjs";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import crypto from "crypto";
 
-dotenv.config(); // Load environment variables
+dotenv.config(); 
 
 interface EmailOptions {
   email: string;
@@ -15,47 +15,50 @@ interface EmailOptions {
 export const sendEmail = async ({ email, emailType, userId }: EmailOptions) => {
   try {
     console.log("📨 Sending email to:", email);
-    console.log("User ID:", userId);
-
-    // Generate a hashed token
-    const hashedToken = await bcrypt.hash(userId.toString(), 10);
-
-    // Update user record based on email type
+    
+ 
+    const token = crypto.randomBytes(32).toString('hex');
+    const hashedToken = await bcrypt.hash(token, 10);
+    
     const updateData: any = {
-      verifiedToken: hashedToken,
-      verifiedTokenExpiry: new Date(Date.now() + 3600000), // 1 hour expiry
+      verifiedToken: emailType === "VERIFY" ? hashedToken : undefined,
+      verifiedTokenExpiry: emailType === "VERIFY" ? new Date(Date.now() + 3600000) : undefined,
+      resetToken: emailType === "RESET" ? hashedToken : undefined,
+      resetTokenExpiry: emailType === "RESET" ? new Date(Date.now() + 3600000) : undefined,
     };
-
-    if (emailType === "RESET") {
-      updateData.resetToken = hashedToken;
-      updateData.resetTokenExpiry = new Date(Date.now() + 3600000);
-    }
 
     await prisma.user.update({
       where: { id: Number(userId) },
       data: updateData,
     });
-    console.log(process.env.SMTP_USER,process.env.SMTP_PASS)
-    // Configure Gmail SMTP Transport
+
     const transport = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || "465"),
-      secure: true, // Use SSL
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
 
-    // Email Content
     const actionText = emailType === "VERIFY" ? "Verify your email" : "Reset your password";
     const emailContent = `
-      <p>Click <a href="${process.env.domain}/verifyemail?token=${hashedToken}">
-        here
-      </a> to ${actionText}.</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">${actionText}</h2>
+        <p>Hello,</p>
+        <p>We received a request to ${actionText.toLowerCase()} for your account.</p>
+        <p>Click the button below to proceed:</p>
+        <a href="${process.env.domain}/${emailType === "VERIFY" ? "verifyemail" : "reset-link-password"}?token=${token}" 
+           style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">
+          ${actionText}
+        </a>
+        <p>If you didn't request this, you can safely ignore this email.</p>
+        <p>This link will expire in 1 hour.</p>
+        <p>Best regards,<br>Map App Team</p>
+      </div>
     `;
 
-    // Mail Options
     const mailOptions = {
       from: `"Map App" <${process.env.SMTP_USER}>`,
       to: email,
@@ -63,10 +66,10 @@ export const sendEmail = async ({ email, emailType, userId }: EmailOptions) => {
       html: emailContent,
     };
 
-    // Send Email
     const mailResponse = await transport.sendMail(mailOptions);
     console.log("✅ Email sent successfully:", mailResponse.messageId);
     return mailResponse;
+
   } catch (error: any) {
     console.error("❌ Error sending email:", error.message);
     throw new Error(error.message);

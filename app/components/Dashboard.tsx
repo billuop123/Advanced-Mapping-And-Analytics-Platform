@@ -32,15 +32,6 @@ const Dashboard = () => {
       { id: 500, name: "Park", icon: "/park.svg" },
        { id: 600, name: "Others", icon: "/Others.svg" },
      ]);
-  // const typeOptions = [
-  //   { id: 1, name: "Hospital", icon: "/hospital.svg" },
-  //   { id: 2, name: "Temple", icon: "/temple.svg" },
-  //   { id: 3, name: "School", icon: "/school.svg" },
-  //   { id: 4, name: "Mall", icon: "/mall.svg" },
-  //   { id: 5, name: "Park", icon: "/park.svg" },
-  //   { id: 6, name: "Others", icon: "/Others.svg" },
-  // ];
-  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newLocation = {
@@ -150,13 +141,13 @@ const Dashboard = () => {
                       id="type"
                       value={type}
                       onChange={(e) => setType(e.target.value)}
-                      disabled={role === "viewer"}
+                      
                       className={`w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${role === "viewer" ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer"} appearance-none`}
                       onClick={(e) => e.stopPropagation()}
                       onMouseDown={(e) => e.stopPropagation()}
                       onTouchStart={(e) => e.stopPropagation()}
                     >
-                      <option value="">{role === "viewer" ? "Viewer Mode (Read Only)" : "Select a type"}</option>
+                      <option value="">{role === "viewer" ? "Viewer Mode" : "Select a type"}</option>
                       {typeOptions.map((option) => (
                         <option key={option.id} value={option.name}>
                           {option.name}
@@ -211,7 +202,7 @@ const Dashboard = () => {
                 onTouchStart={(e) => e.stopPropagation()}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2"
               >
-                {role === "viewer" ? "Viewer Mode (Read Only)" : "Add Location"}
+                {role === "viewer" ? "Viewer Mode" : "Add Location"}
               </Button>
             </form>
 
@@ -230,26 +221,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-
-/*function lockFilledRows() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var range = sheet.getDataRange();
-  var values = range.getValues();
-  var protection = sheet.getProtections(SpreadsheetApp.ProtectionType.RANGE);
-  Logger.log(range);
-  Logger.log(values);
-  Logger.log(protection);
-  Logger.log(sheet)
-  // Remove existing protections
-  protection.forEach(prot => prot.remove());
-
-  for (var i = 0; i < values.length; i++) {
-    if (values[i].every(cell => cell.toString().trim() !== "")) { // Check if all columns are filled
-      var rowRange = sheet.getRange(i + 1, 1, 1, sheet.getLastColumn());
-      var lock = rowRange.protect();
-      lock.removeEditors(lock.getEditors()); // Lock for everyone except owner
-      lock.setWarningOnly(false); // Completely lock the row
-    }
-  }
-} */

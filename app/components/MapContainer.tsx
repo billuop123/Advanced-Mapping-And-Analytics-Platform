@@ -6,19 +6,33 @@ import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 import { useUser } from "../contexts/LoginContext";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import L from "leaflet"
 import axios from "axios";
-
+import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+export type ShapesState = {
+  polygons: LatLngExpression[][];
+  circles: { center: LatLng; radius: number }[];
+  polylines: LatLngExpression[][];
+  rectangles: LatLngBounds[];
+};
+const initialShapes: ShapesState = {
+  polygons: [],
+  circles: [],
+  polylines: [],
+  rectangles: [],
+};
 const MapDashboardContainer = () => {
   const [isDashboardVisible, setIsDashboardVisible] = useState(false);
   const mapRef = useRef<{ handleResize: () => void } | null>(null);
   const { status, email } = useUser();
   const session = useSession();
-  const router = useRouter();
-
+  const router = useRouter(); 
   const toggleDashboard = () => {
     setIsDashboardVisible((prev) => !prev);
   };
-
+    // const [shapes, setShapes] = useState<ShapesState>(initialShapes);
+    // const [loading, setLoading] = useState<boolean>(false);
+    // const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (status === "loading") return;
     if (!email) {

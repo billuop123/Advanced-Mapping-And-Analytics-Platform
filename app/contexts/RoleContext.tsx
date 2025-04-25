@@ -4,7 +4,7 @@ import { useUser } from "./LoginContext";
 
 interface RoleContextType {
   role: string;
-  fetchRole: () => Promise<void>; // Add a fetch function
+  fetchRole: () => Promise<void>; 
 }
 
 const RoleContext = createContext<RoleContextType>({
@@ -31,7 +31,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Fetch role when the component mounts or when the email changes
+
   useEffect(() => {
     if (email) {
       fetchRole();

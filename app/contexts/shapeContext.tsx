@@ -36,7 +36,7 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchShapes = async () => {
+   const fetchShapes = async () => {
     if (!email) return;
     setLoading(true);
     setError(null);
@@ -82,9 +82,7 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  useEffect(() => {
-    fetchShapes();
-  }, [email]);
+
 
   return (
     <ShapeContext.Provider

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "./LoginContext";
 
-// Define the interface for the location object
+
 interface Location {
   latitude: number;
   longitude: number;
@@ -10,17 +10,17 @@ interface Location {
   type: string;
 }
 
-// Define the shape of the context
+
 interface LocationContextType {
   allLocationArray: Location[];
   addLocation: (location: Location) => void;
-  fetchMarkers: (email: string) => Promise<void>; // Function to fetch markers
-  loading: boolean; // Loading state
-  error: string | null; // Error state
+  fetchMarkers: (email: string) => Promise<void>; 
+  loading: boolean; 
+  error: string | null; 
   setAllLocationArray: React.Dispatch<React.SetStateAction<Location[]>>;
 }
 
-// Create the context with a default value
+
 const LocationContext = createContext<LocationContextType>({
   allLocationArray: [],
   addLocation: () => {},
@@ -30,7 +30,7 @@ const LocationContext = createContext<LocationContextType>({
   error: null,
 });
 
-// Custom hook to use the context
+
 export const useLocationContext = () => {
   const context = useContext(LocationContext);
   if (!context) {
@@ -41,7 +41,7 @@ export const useLocationContext = () => {
   return context;
 };
 
-// Context Provider component
+
 export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -51,19 +51,19 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [loading, setLoading] = useState<boolean>(false); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
 
-  // Function to add a new location
+
   const addLocation = (location: Location) => {
     setAllLocationArray((prev) => [...prev, location]);
   };
 
-  // Function to fetch markers
+
   const fetchMarkers = async (email: string) => {
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(`/api/v1/marker/getMarker?email=${email}`);
       if (response.status === 200) {
-        setAllLocationArray(response.data.markers); // Update the state with fetched markers
+        setAllLocationArray(response.data.markers);
       } else {
         throw new Error("Failed to fetch markers");
       }
@@ -78,7 +78,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // Fetch markers when the component mounts or when the email changes
+ 
   useEffect(() => {
     if (email) {
       fetchMarkers(email);
