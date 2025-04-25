@@ -6,7 +6,6 @@ import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 import { useUser } from "../contexts/LoginContext";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import L from "leaflet"
 import axios from "axios";
 import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 export type ShapesState = {
@@ -14,12 +13,6 @@ export type ShapesState = {
   circles: { center: LatLng; radius: number }[];
   polylines: LatLngExpression[][];
   rectangles: LatLngBounds[];
-};
-const initialShapes: ShapesState = {
-  polygons: [],
-  circles: [],
-  polylines: [],
-  rectangles: [],
 };
 const MapDashboardContainer = () => {
   const [isDashboardVisible, setIsDashboardVisible] = useState(false);
@@ -30,9 +23,6 @@ const MapDashboardContainer = () => {
   const toggleDashboard = () => {
     setIsDashboardVisible((prev) => !prev);
   };
-    // const [shapes, setShapes] = useState<ShapesState>(initialShapes);
-    // const [loading, setLoading] = useState<boolean>(false);
-    // const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (status === "loading") return;
     if (!email) {
@@ -53,9 +43,9 @@ const MapDashboardContainer = () => {
 }, []);
 
   useEffect(() => {
-    // Trigger a resize event on the map when the dashboard is toggled
+    
     if (mapRef.current) {
-      // Assuming MapClient has a method to handle resize
+    
   
       if (typeof mapRef.current.handleResize === "function") {
         mapRef.current.handleResize();

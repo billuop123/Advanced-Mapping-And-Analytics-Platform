@@ -83,7 +83,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
     if (email) {
       fetchMarkers(email);
     }
-  }, [email]);
+  }, []);
 
   return (
     <LocationContext.Provider
@@ -94,6 +94,7 @@ export const LocationProvider: React.FC<{ children: React.ReactNode }> = ({
         setAllLocationArray,
         loading,
         error,
+        
       }}
     >
       {children}

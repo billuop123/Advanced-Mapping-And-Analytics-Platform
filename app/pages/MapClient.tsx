@@ -26,6 +26,7 @@ import { useRole } from "../contexts/RoleContext";
 import { useSession } from "next-auth/react";
 import { useShapes } from "../contexts/shapeContext";
 import { useUser } from "../contexts/LoginContext";
+import { useLocationContext } from "../contexts/LocationContext";
 
 export default function MapClient({ ref }: { ref: any }) {
   const mapRef = useRef<L.Map | null>(null);
@@ -38,9 +39,14 @@ export default function MapClient({ ref }: { ref: any }) {
   const { role } = useRole();
   const {email}=useUser()
   const { fetchShapes } = useShapes();
-
+  const { fetchMarkers } = useLocationContext();
   useEffect(() => {
     fetchShapes();
+  }, [email]);
+  useEffect(() => {
+    if (email) {
+      fetchMarkers(email);
+    }
   }, [email]);
   useEffect(() => {
     if (!sessionStorage.getItem('hasReloaded')) {
@@ -62,7 +68,6 @@ export default function MapClient({ ref }: { ref: any }) {
 
   useEffect(() => {
     return () => {
-      console.log("called cleanup");
       if (mapRef.current) {
         mapRef.current.off();
         mapRef.current.remove();
