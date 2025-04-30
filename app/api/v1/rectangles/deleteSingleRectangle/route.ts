@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken"
-// Function to round coordinates to 10 decimal places
+import { RectangleRepositoryImpl } from "@/src/infrastructure/repositories/rectangleInfraRepo";
+import { DeleteRectangleUseCase } from "@/src/application/use-cases/rectangles/DeleteRectangleUseCase";
 const roundTo10DecimalPlaces = (num:Number) => {
   return parseFloat(num.toFixed(10));
 };
@@ -14,9 +14,9 @@ export async function POST(req: Request) {
     const session = await getServerSession(options);
                                         
                                       
-                                          if (!session) {
-                                            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-                                          }
+    if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
                           
                                           const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
     // Validate input
@@ -43,54 +43,12 @@ export async function POST(req: Request) {
 
 
     if (!userId) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(null, { status: 404 });
     }
-
-    // Find all rectangles for the user
-    const rectangles = await prisma.rectangle.findMany({
-      where: {
-        shape: {
-          userId: userId, // Ensure the rectangle belongs to the user
-        },
-      },
-    });
-
-    // Find the rectangle with matching bounds (up to 10 decimal places)
-    const rectangle = rectangles.find((rect) => {
-      const dbBounds = {
-        southwest: {
-          //@ts-expect-error
-          lat: roundTo10DecimalPlaces(rect.bounds!.southwest.lat),
-             //@ts-expect-error
-          lng: roundTo10DecimalPlaces(rect.bounds.southwest.lng),
-        },
-        northeast: {
-             //@ts-expect-error
-          lat: roundTo10DecimalPlaces(rect.bounds.northeast.lat),
-             //@ts-expect-error
-          lng: roundTo10DecimalPlaces(rect.bounds.northeast.lng),
-        },
-      };
-      return JSON.stringify(dbBounds) === JSON.stringify(roundedBounds);
-    });
-
-    if (!rectangle) {
-      return NextResponse.json({
-        error: "Rectangle with the specified bounds not found",
-      });
-    }
-
-    // Delete the specific rectangle
-    await prisma.rectangle.delete({
-      where: {
-        id: rectangle.id, // Use the unique ID of the rectangle
-      },
-    });
-
-    return NextResponse.json(
-      { message: "Rectangle deleted successfully" },
-      { status: 200 }
-    );
+    const rectangleRepository = new RectangleRepositoryImpl();
+    const deleteRectagleUseCase = new DeleteRectangleUseCase(rectangleRepository);
+    const result = await deleteRectagleUseCase.execute(userId,roundedBounds);
+    return result;
   } catch (error:any) {
     return NextResponse.json({
       details: error.message,

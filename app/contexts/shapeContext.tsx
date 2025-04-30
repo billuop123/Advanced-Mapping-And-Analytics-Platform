@@ -2,15 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 import { useSession } from "next-auth/react";
+import { ShapesState } from "@/src/domain/entities/Map";
 
-export type ShapesState = {
-  polygons: LatLngExpression[][];
-  circles: { center: LatLng; radius: number }[];
-  polylines: LatLngExpression[][];
-  rectangles: LatLngBounds[];
-};
 
-const initialShapes: ShapesState = {
+
+const initialShapes: ShapesState   = {
   polygons: [],
   circles: [],
   polylines: [],

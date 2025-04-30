@@ -1,20 +1,20 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken"
+import { PolygonRepositoryImpl } from "@/src/infrastructure/repositories/polygonInfraRepo";
+import { CreatePolygonUseCase } from "@/src/application/use-cases/polygons/CreatePolygonUseCase";
+
 export async function POST(req: Request) {
-  try {
-    // Extract the email, coordinates, and type from the request body
+
     const session = await getServerSession(options);
                           
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
                         
-                            if (!session) {
-                              return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-                            }
-                        
-                            const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
-    const {  coords, type } = await req.json();
+    const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
+    const { coords, type } = await req.json();
 
     if (!coords || !type) {
       return NextResponse.json(
@@ -23,43 +23,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Round the coordinates to 15 decimal places
-    let roundedCoords = coords.map((polygon:any) =>
-      polygon.map((point:any) => ({
-        lat: parseFloat(point.lat.toFixed(15)),
-        lng: parseFloat(point.lng.toFixed(15)),
-      }))
-    );
-    roundedCoords = roundedCoords.flat();
-    // Find the user by email
-   
+    const polygonRepository = new PolygonRepositoryImpl();
+    const createPolygonUseCase = new CreatePolygonUseCase(polygonRepository);
+    const result = await createPolygonUseCase.execute(userId, coords, type);
+    return result;
 
-    if (!userId) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Create a new shape with a polygon
-    const shape = await prisma.shape.create({
-      data: {
-        type: type,
-        userId: userId,
-        polygon: {
-          create: {
-            coords: roundedCoords, // Use the rounded coordinates
-          },
-        },
-      },
-      include: {
-        polygon: true, // Include the polygon in the response
-      },
-    });
-
-    return NextResponse.json(shape, { status: 201 });
-  } catch (error) {
-    console.error("Error saving polygon:", error);
-    return NextResponse.json(
-      { error: "Failed to save polygon" },
-      { status: 500 }
-    );
-  }
 }

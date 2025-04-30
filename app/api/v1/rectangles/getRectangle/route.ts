@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken"
+import { RectangleRepositoryImpl } from "@/src/infrastructure/repositories/rectangleInfraRepo";
+import { GetRectangleUseCase } from "@/src/application/use-cases/rectangles/GetRectangleUseCase";
 export async function GET(req: Request) {
   try {
 
@@ -23,19 +24,10 @@ export async function GET(req: Request) {
     }
 
 
-    const admins = await prisma.user.findMany({ where: { role: "admin" } });
-    const adminIds = admins.map((admin) => admin.id);
-
-    const rectangles = await prisma.rectangle.findMany({
-      where: {
-        shape: {
-          userId: { in: [...adminIds, userId] },
-        },
-      },
-      include: { shape: true },
-    });
-
-    return NextResponse.json(rectangles, { status: 200 });
+    const rectangleRepository = new RectangleRepositoryImpl();
+    const getRectangleUseCase = new GetRectangleUseCase(rectangleRepository);
+    const result = await getRectangleUseCase.execute(userId);
+    return result;
   } catch (error) {
     console.error("Error fetching rectangles:", error);
     return NextResponse.json(

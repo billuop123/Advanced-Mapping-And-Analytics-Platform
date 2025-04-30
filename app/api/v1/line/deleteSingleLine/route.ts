@@ -3,80 +3,43 @@ import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken"
-
-const roundTo10DecimalPlaces = (num:Number) => {
-  return parseFloat(num.toFixed(10));
-};
+import { LineRepositoryImpl } from "@/src/infrastructure/repositories/lineDomainRepo";
+import { CreateLineUseCase } from "@/src/application/use-cases/lines/CreateLineUseCase";
+import { DeleteLineUseCase } from "@/src/application/use-cases/lines/DeleteLineUseCase";
 
 export async function POST(req: Request) {
   try {
-       const session = await getServerSession(options);
+    const session = await getServerSession(options);
           
-        
-            if (!session) {
-              return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-            }
-    
-            const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
-    const {coords } = await req.json();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const {userId} = jwt.decode(session.user.accessToken) as {userId:number}
+    const {coords} = await req.json();
    
-    // Validate input
     if (!coords) {
       return NextResponse.json(
-        { error: "Email and coordinates are required" },
+        { error: "Coordinates are required" },
         { status: 400 }
       );
     }
 
-    const roundedCoords = coords.map((coord:any) => ({
-      lat: roundTo10DecimalPlaces(coord.lat),
-      lng: roundTo10DecimalPlaces(coord.lng),
-    }));
-
-    console.log("Rounded Coordinates:", roundedCoords);
-
-
-    if (!userId) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const lineRepository = new LineRepositoryImpl();
+    const deleteLineUsecase = new DeleteLineUseCase(lineRepository);
+    const result = await deleteLineUsecase.execute(userId, coords);
+    
+    if (result.status === 204) {
+      return new NextResponse(null, { status: 204 });
     }
-
-    const polylines = await prisma.polyline.findMany({
-      where: {
-        shape: {
-          userId: userId,
-        },
-      },
-    });
-
-    const polyline = polylines.find((line) => {
-      if (!line.coords) return false;
-      const dbCoords = (line.coords as any[]).map((coord) => ({
-        lat: roundTo10DecimalPlaces(coord.lat),
-        lng: roundTo10DecimalPlaces(coord.lng),
-      }));
-      return JSON.stringify(dbCoords) === JSON.stringify(roundedCoords);
-    });
-
-    if (!polyline) {
-      return NextResponse.json({
-        error: "Polyline with the specified coordinates not found",
-      });
-    }
-
-    await prisma.polyline.delete({
-      where: {
-        id: polyline.id,
-      },
-    });
-
-    return NextResponse.json(
-      { message: "Polyline deleted successfully" },
-      { status: 200 }
-    );
-  } catch (error:any) {
+    
+    return result;
+  } catch (error: any) {
+    console.error("Error deleting line:", error);
     return NextResponse.json({
-      error: "Failed to delete polyline",
+      error: "Failed to delete line",
       details: error.message,
-    });
+    }, { status: 500 });
   }
-}
+} 
+

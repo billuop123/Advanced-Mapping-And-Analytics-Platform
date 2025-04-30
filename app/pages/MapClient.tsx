@@ -23,31 +23,36 @@ import { EditControls } from "../services/EditControl";
 import { LivePositionButton } from "../components/LivePosition.Button";
 import { LongitudeAndLatitudeInput } from "../components/LongitudeAndLatitudeInput";
 import { useRole } from "../contexts/RoleContext";
-import { useSession } from "next-auth/react";
 import { useShapes } from "../contexts/shapeContext";
 import { useUser } from "../contexts/LoginContext";
 import { useLocationContext } from "../contexts/LocationContext";
+import { Map } from "@/src/domain/entities/Map";
 
 export default function MapClient({ ref }: { ref: any }) {
   const mapRef = useRef<L.Map | null>(null);
   const { position } = usePosition();
   const featureGroupRef = useRef<L.FeatureGroup | null>(null);
-  const [tileLayerUrl, setTileLayerUrl] = useState(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  );
-  const [selectedMapType, setSelectedMapType] = useState("Default");
   const { role } = useRole();
-  const {email}=useUser()
+  const {email} = useUser();
   const { fetchShapes } = useShapes();
   const { fetchMarkers } = useLocationContext();
+  
+  const [map, setMap] = useState<Map>({
+    id: 'default',
+    zoom: 10,
+    tileLayerUrl: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  });
+
   useEffect(() => {
     fetchShapes();
   }, [email]);
+
   useEffect(() => {
     if (email) {
       fetchMarkers(email);
     }
   }, [email]);
+
   useEffect(() => {
     if (!sessionStorage.getItem('hasReloaded')) {
       sessionStorage.setItem('hasReloaded', 'true');
@@ -76,45 +81,47 @@ export default function MapClient({ ref }: { ref: any }) {
     };
   }, [mapRef]);
 
+  const handleMapTypeChange = (selectedValue: string) => {
+    let newTileLayerUrl = map.tileLayerUrl;
+    
+    if (selectedValue === "Humanitarian") {
+      newTileLayerUrl = "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
+    } else if (selectedValue === "Topographic") {
+      newTileLayerUrl = "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png";
+    } else if (selectedValue === "Default") {
+      newTileLayerUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    } else if (selectedValue === "Satellite") {
+      newTileLayerUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+    }
+
+    setMap(prev => ({
+      ...prev,
+      tileLayerUrl: newTileLayerUrl
+    }));
+  };
+
   return (
     <div className="h-full w-full">
       <MapContainer
         center={position}
-        zoom={10}
+        zoom={map.zoom}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%", position: "relative" }}
         ref={mapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={tileLayerUrl}
+          url={map.tileLayerUrl}
         />
 
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] bg-white rounded-lg shadow-lg">
           <select
-            value={selectedMapType}
+            value={map.tileLayerUrl.includes('hot') ? "Humanitarian" : 
+                   map.tileLayerUrl.includes('opentopomap') ? "Topographic" :
+                   map.tileLayerUrl.includes('arcgisonline') ? "Satellite" : "Default"}
             onChange={(e) => {
-              const selectedValue = e.target.value;
               e.stopPropagation();
-              setSelectedMapType(selectedValue);
-
-              if (selectedValue === "Humanitarian") {
-                setTileLayerUrl(
-                  "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-                );
-              } else if (selectedValue === "Topographic") {
-                setTileLayerUrl(
-                  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
-                );
-              } else if (selectedValue === "Default") {
-                setTileLayerUrl(
-                  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                );
-              } else if (selectedValue === "Satellite") {
-                setTileLayerUrl(
-                  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-                );
-              }
+              handleMapTypeChange(e.target.value);
             }}
             className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -134,9 +141,7 @@ export default function MapClient({ ref }: { ref: any }) {
           <LocationArray />
           {role === "editor" || role === "admin" ? (
             <EditControls featureGroupRef={featureGroupRef} />
-          ) : (
-            ""
-          )}
+          ) : null}
         </FeatureGroup>
         <Marker position={position} icon={customIcon}>
           <Popup>Your current position</Popup>

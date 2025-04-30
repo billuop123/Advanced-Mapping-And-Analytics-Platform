@@ -1,12 +1,8 @@
+import { ShapesState } from "@/src/domain/entities/Map";
 import axios from "axios";
-import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+import L, {
+   LatLngExpression } from "leaflet";
 
-type ShapesState = {
-  polygons: LatLngExpression[][];
-  circles: { center: LatLng; radius: number }[];
-  polylines: LatLngExpression[][];
-  rectangles: LatLngBounds[];
-};
 export const _created = async (
   e: { layer: L.Layer },
   email: string | null | undefined,
@@ -48,7 +44,6 @@ export const _created = async (
     console.log(coords);
     try {
       await axios.post("http://localhost:3001/api/v1/polygons/createPolygon", {
-        email,
         coords: coords,
         type: "POLYGON",
       });
@@ -56,8 +51,8 @@ export const _created = async (
         ...prevShapes,
         polygons: [...prevShapes.polygons, ...coords],
       }));
-    } catch (error) {
-      console.error("Error saving polygon:", error);
+    } catch (error:any) {
+      console.error("Error saving polygon:", error.message);
     }
   } else if (layer instanceof L.Circle) {
     const center = layer.getLatLng();
@@ -79,7 +74,6 @@ export const _created = async (
     const coords = layer.getLatLngs() as LatLngExpression[];
     try {
       await axios.post("http://localhost:3001/api/v1/line/createLine", {
-        email,
         coords: coords,
         type: "POLYLINE",
       });

@@ -1,10 +1,8 @@
 "use client";
 import { createContext, useContext, useState, ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-type PositionContextType = {
-  position: [number, number];
-  setPosition: (pos: [number, number]) => void;
-};
+import { PositionContextType } from "@/src/domain/entities/Map";
+
 
 const PosContext = createContext<PositionContextType | undefined>(undefined);
 

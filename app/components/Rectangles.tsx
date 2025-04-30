@@ -7,13 +7,7 @@ import { calculateRectangleArea } from "../helperFunctions/calculateArea";
 import { useShapes } from "../contexts/shapeContext";
 import { useUser } from "../contexts/LoginContext";
 import { useRole } from "../contexts/RoleContext";
-import { LatLng, LatLngBounds } from "leaflet";
-interface ShapesState {
-  circles: { center: LatLng; radius: number }[];
-  polygons: LatLng[][];
-  polylines: LatLng[][];
-  rectangles: LatLngBounds[];
-}
+import { ShapesState } from "@/src/domain/entities/Map";
 export const Rectangles = () => {
   const { shapes, setShapes } = useShapes();
   const { email } = useUser();

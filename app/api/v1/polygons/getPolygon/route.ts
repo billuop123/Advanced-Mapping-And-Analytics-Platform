@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken";
+import { PolygonRepositoryImpl } from "@/src/infrastructure/repositories/polygonInfraRepo";
+import {GetPolygonUseCase } from "@/src/application/use-cases/polygons/GetPolygonUseCase";
 
 export async function GET(req: Request) {
-  try {
+
     const session = await getServerSession(options);
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -16,32 +17,10 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // const polygons = await prisma.polygon.findMany({
-    //   where: {
-    //     shape: {
-    //       userId: userId,
-    //     },
-    //   },
-    //   include: { shape: true },
-    // });
-    const admins = await prisma.user.findMany({ where: { role: "admin" } });
-    const adminIds = admins.map((admin) => admin.id);
 
-    // Fetch polygons for user and admins
-    const polygons = await prisma.polygon.findMany({
-      where: {
-        shape: {
-          userId: { in: [...adminIds, userId] },
-        },
-      },
-      include: { shape: true },
-    });
-    return NextResponse.json(polygons, { status: 200 });
-  } catch (error:any) {
-    console.error("Error fetching polygons:", error);
-    return NextResponse.json(
-      { error: `Failed to fetch polygons ${error.message}` },
-      { status: 500 }
-    );
-  }
+    const polygonRepository = new PolygonRepositoryImpl();
+    const getPolygonUseCase = new GetPolygonUseCase(polygonRepository);
+    const result = await getPolygonUseCase.execute(userId);
+    return result;
+  
 }

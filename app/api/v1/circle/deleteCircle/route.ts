@@ -4,19 +4,20 @@ import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
 import jwt from "jsonwebtoken";
+import { CircleRepositoryImpl } from "@/src/infrastructure/repositories/circleInfraRepo";
+import { CreateCircleUseCase } from "@/src/application/use-cases/circles/CreateCircleUseCase";
+import { DeleteCircleUseCase } from "@/src/application/use-cases/circles/DeleteCircleUseCase";
 export async function DELETE(req: Request) {
   try {
      const session= await getServerSession(options)
       console.log(session)
-    const { email } = await req.json();
+
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const {userId} = jwt.decode(session.user.accessToken) as { userId: number }
-    if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    }
+    
 
     // const user = await prisma.user.findFirst({
     //   where: { email: email },

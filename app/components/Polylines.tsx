@@ -5,14 +5,7 @@ import { formatCoordinates } from "../helperFunctions/formattedCoords";
 import { handleDeleteLine } from "../helperFunctions/mapHelpers";
 import { useUser } from "../contexts/LoginContext";
 import { useRole } from "../contexts/RoleContext";
-import { LatLngBounds } from "leaflet";
-import { LatLng } from "leaflet";
-interface ShapesState {
-  circles: { center: LatLng; radius: number }[];
-  polygons: LatLng[][];
-  polylines: LatLng[][];
-  rectangles: LatLngBounds[]; 
-}
+import { ShapesState } from "@/src/domain/entities/Map";
 export const Polylines = function () {
   const { shapes, setShapes } = useShapes();
   const { email } = useUser();

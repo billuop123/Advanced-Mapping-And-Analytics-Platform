@@ -20,8 +20,6 @@ export async function DELETE(req: Request) {
     if (!userId) {
       return NextResponse.json({ error: "User  not found" }, { status: 404 });
     }
-
-    // Delete all polygons associated with the user
     await prisma.polygon.deleteMany({
       where: {
         shape: {

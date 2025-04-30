@@ -5,12 +5,8 @@ import { popupContentStyle, deleteButtonStyle } from "../api/config";
 import { handleDeleteCircle } from "../helperFunctions/mapHelpers";
 import { useUser } from "../contexts/LoginContext";
 import { useRole } from "../contexts/RoleContext";
-interface ShapesState {
-  circles: { center: LatLng; radius: number }[];
-  polygons: LatLng[][];
-  polylines: LatLng[][];
-  rectangles: LatLngBounds[]; // Use LatLngBounds instead of LatLng[][]
-}
+import { ShapesState } from "@/src/domain/entities/Map";
+
 export const Circles = function () {
   const { shapes, setShapes } = useShapes();
   const { email } = useUser();

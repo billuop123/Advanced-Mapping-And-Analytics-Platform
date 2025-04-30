@@ -1,16 +1,11 @@
 import axios from "axios";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./LoginContext";
+import { RoleContextType } from "@/src/domain/entities/Map";
 
-interface RoleContextType {
-  role: string;
-  fetchRole: () => Promise<void>; 
-}
 
-const RoleContext = createContext<RoleContextType>({
-  role: "",
-  fetchRole: async () => {},
-});
+
+const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

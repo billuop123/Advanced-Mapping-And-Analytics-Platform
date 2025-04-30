@@ -1,25 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "./LoginContext";
-
-
-interface Location {
-  latitude: number;
-  longitude: number;
-  description: string;
-  type: string;
-}
-
-
-interface LocationContextType {
-  allLocationArray: Location[];
-  addLocation: (location: Location) => void;
-  fetchMarkers: (email: string) => Promise<void>; 
-  loading: boolean; 
-  error: string | null; 
-  setAllLocationArray: React.Dispatch<React.SetStateAction<Location[]>>;
-}
-
+import { Location, LocationContextType } from "@/src/domain/entities/Map";
 
 const LocationContext = createContext<LocationContextType>({
   allLocationArray: [],

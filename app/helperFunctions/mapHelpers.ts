@@ -88,8 +88,6 @@ export const handleDeletePolygon = async (
     );
   }
 
-  console.log("Normalized coords:", normalizedCoords);
-
   const compareCoordinates = (
     coord1: { lat: number; lng: number },
     coord2: { lat: number; lng: number }
@@ -110,19 +108,19 @@ export const handleDeletePolygon = async (
   }
 
   try {
-    // Send a request to delete the polygon
+    
     const response = await axios.post(
       "http://localhost:3001/api/v1/polygons/deleteSinglePolygon",
       {
         email,
-        coords: normalizedCoords, // Use normalized coordinates
+        coords: normalizedCoords, 
       }
     );
 
-    if (response.status === 200) {
+    if (response.status === 204) {
       console.log("Polygon deleted successfully:", response.data.message);
 
-      // Update the state by removing the deleted polygon
+     
       setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
         polygons: prevShapes.polygons.filter((polygon) => {
@@ -150,7 +148,7 @@ export const handleDeleteLine = async (
   email: string | null | undefined,
   setShapes: SetShapes
 ) => {
-  console.log(coords); // Log the coordinates for debugging
+  console.log(coords); 
 
   try {
     const response = await axios.post(
@@ -158,7 +156,7 @@ export const handleDeleteLine = async (
       { email, coords }
     );
 
-    if (response.status === 200) {
+    if (response.status === 204) {
       console.log("Polyline deleted successfully:", response.data.message);
       setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,
@@ -194,7 +192,7 @@ export const handleDeleteRectangle = async (
       { email, bounds }
     );
 
-    if (response.status === 200) {
+    if (response.status === 204) {
       console.log("Rectangle deleted successfully:", response.data.message);
       setShapes((prevShapes: ShapesState) => ({
         ...prevShapes,

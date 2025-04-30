@@ -1,12 +1,8 @@
 import React, { createContext, useContext } from "react";
 import { useSession } from "next-auth/react";
+import { UserContextType } from "@/src/domain/entities/Map";
 
-interface UserContextType {
-  email: string | null;
-  photoUrl: string | null;
-  name: string | null;
-  status: string;
-}
+
 
 const UserContext = createContext<UserContextType | null>(null);
 
