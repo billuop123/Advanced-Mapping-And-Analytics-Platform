@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { options } from "@/app/api/auth/[...nextauth]/route"; // Ensure this is the correct import for your auth options
+import { options } from "@/app/api/auth/[...nextauth]/route"; 
 import jwt from "jsonwebtoken";
 import { prisma } from "@/app/services/prismaClient";
 

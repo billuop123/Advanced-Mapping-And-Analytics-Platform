@@ -6,7 +6,7 @@ export const POST = async (req: Request) => {
     try {
         const { token, password } = await req.json();
 
-        // Find user with matching reset token
+ 
         const user = await prisma.user.findFirst({
             where: {
                 resetToken: {
@@ -22,16 +22,16 @@ export const POST = async (req: Request) => {
             return NextResponse.json({ message: "Invalid or expired token" }, { status: 400 });
         }
 
-        // Verify the token
+ 
         const isValidToken = await bcrypt.compare(token, user.resetToken!);
         if (!isValidToken) {
             return NextResponse.json({ message: "Invalid token" }, { status: 400 });
         }
 
-        // Hash new password
+  
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Update user's password and clear reset token
+       
         await prisma.user.update({
             where: { id: user.id },
             data: {

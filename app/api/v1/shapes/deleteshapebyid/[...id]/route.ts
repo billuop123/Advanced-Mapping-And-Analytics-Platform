@@ -1,4 +1,7 @@
 import { prisma } from "@/app/services/prismaClient";
+import { DeleteAllShapeUseCase } from "@/src/application/use-cases/shapes/DeleteAllShapeUseCase";
+import { DeleteShapeByIdUseCase } from "@/src/application/use-cases/shapes/DeleteShapeByIdUseCase";
+import { ShapeRepositoryImpl } from "@/src/infrastructure/repositories/shapeinfraRepo";
 import { NextResponse } from "next/server";
 
 export async function DELETE(
@@ -14,16 +17,10 @@ export async function DELETE(
   }
 
   try {
-    await prisma.shape.delete({
-      where: {
-        id: shapeId,
-      },
-    });
-
-    return NextResponse.json(
-      { message: "Shape successfully deleted" },
-      { status: 200 }
-    );
+    const shapeRepository = new ShapeRepositoryImpl();
+    const createShapeRepository = new DeleteShapeByIdUseCase(shapeRepository);
+    const result = await createShapeRepository.execute(shapeId);
+    return result;
   } catch (err: any) {
     console.error("Error deleting shape:", err);
     return NextResponse.json(

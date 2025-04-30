@@ -16,11 +16,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // const markers = await prisma.location.findMany({
-    //   where: {
-    //     userId: userId,
-    //   },
-    // });
     const admins = await prisma.user.findMany({ where: { role: "admin" } });
     const adminIds = admins.map((admin) => admin.id);
     const markers = await prisma.location.findMany({

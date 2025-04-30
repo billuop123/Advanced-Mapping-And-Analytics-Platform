@@ -8,7 +8,7 @@ import { CreateLineUseCase } from "@/src/application/use-cases/lines/CreateLineU
 import { DeleteLineUseCase } from "@/src/application/use-cases/lines/DeleteLineUseCase";
 
 export async function POST(req: Request) {
-  try {
+
     const session = await getServerSession(options);
           
     if (!session) {
@@ -34,12 +34,6 @@ export async function POST(req: Request) {
     }
     
     return result;
-  } catch (error: any) {
-    console.error("Error deleting line:", error);
-    return NextResponse.json({
-      error: "Failed to delete line",
-      details: error.message,
-    }, { status: 500 });
-  }
-} 
+  } 
+ 
 

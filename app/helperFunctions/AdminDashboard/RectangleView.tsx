@@ -1,7 +1,7 @@
 import { ShapeInfo } from "../interfacesAdminDashboard";
 
 export default function RectangleView({rectangles, handleViewShape, openDeleteConfirm}: {rectangles: ShapeInfo[] | undefined, handleViewShape: (shapeId: number) => void, openDeleteConfirm: (shapeId: number) => void}) {
-    return       <> {rectangles?.map((shape) => (
+    return rectangles?.map((shape) => (
         <tr key={shape.rectangle?.id}>
           <td className="px-6 py-4 whitespace-nowrap">Rectangle</td>
           <td className="px-6 py-4 whitespace-nowrap">{shape.rectangle?.id}</td>
@@ -29,6 +29,5 @@ export default function RectangleView({rectangles, handleViewShape, openDeleteCo
             </div>
           </td>
         </tr>
-      ))}
-      </>
+      ));
 }

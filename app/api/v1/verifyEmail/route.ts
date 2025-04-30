@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     console.log('-------------')
     console.log(token)
 
-    // Find all users with non-empty verifiedToken
+ 
     const users = await prisma.user.findMany({
       where: {
         verifiedToken: {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Find the user whose hashed token matches the incoming token
+
     let user = null;
     for (const potentialUser of users) {
       if (potentialUser.verifiedToken) {

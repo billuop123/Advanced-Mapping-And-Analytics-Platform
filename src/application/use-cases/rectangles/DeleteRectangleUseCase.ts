@@ -1,6 +1,6 @@
 // src/application/use-cases/CreateCircleUseCase.ts
 import { RectangleRepository } from '@/src/domain/repositories/rectangleDomainRepo';
-import { handlePolygonOperation, handleRectangleOperation } from '@/src/helpers/handleOperations';
+import { handleOperation, handlePolygonOperation, handleRectangleOperation } from '@/src/helpers/handleOperations';
 export class DeleteRectangleUseCase {
   constructor(private rectangleRepository: RectangleRepository) {}
 
@@ -10,7 +10,7 @@ export class DeleteRectangleUseCase {
             userId,
             bounds
           );
-        const result = await handleRectangleOperation(response);
+        const result = await handleOperation(response,"Delete Rectangle");
         return result;
 }
 }

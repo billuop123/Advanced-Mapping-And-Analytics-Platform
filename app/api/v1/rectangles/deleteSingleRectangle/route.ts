@@ -9,7 +9,7 @@ const roundTo10DecimalPlaces = (num:Number) => {
 };
 
 export async function POST(req: Request) {
-  try {
+ 
     const { bounds } = await req.json();
     const session = await getServerSession(options);
                                         
@@ -49,9 +49,5 @@ export async function POST(req: Request) {
     const deleteRectagleUseCase = new DeleteRectangleUseCase(rectangleRepository);
     const result = await deleteRectagleUseCase.execute(userId,roundedBounds);
     return result;
-  } catch (error:any) {
-    return NextResponse.json({
-      details: error.message,
-    });
-  }
-}
+  } 
+

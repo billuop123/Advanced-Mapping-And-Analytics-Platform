@@ -25,25 +25,20 @@ export default function NewMapPage() {
               return;
             }
             const response = await axios.get(`/api/v1/shapes/getShapebyId/${shapeId}`);
-            console.log('Shape data:', response.data);
             if(response.data.type === "POLYGON"){
-              setShapeCoords(response.data.polygon.coords);
-              console.log(response.data.polygon.coords);
+              setShapeCoords(response.data.polygon.coords); 
               setShapeType("polygon");
             }
             if(response.data.type === "POLYLINE"){
               setShapeCoords(response.data.polyline.coords);
-              console.log(response.data.polyline.coords);
               setShapeType("polyline");
             }
             if(response.data.type === "RECTANGLE"){
               setShapeCoords(response.data.rectangle);
-              console.log(response.data.rectangle);
               setShapeType("rectangle");
             }
             if(response.data.type === "CIRCLE"){
               setShapeCoords(response.data.circle);
-              console.log(response.data.circle);
               setShapeType("circle");
             }
           } catch (error) {

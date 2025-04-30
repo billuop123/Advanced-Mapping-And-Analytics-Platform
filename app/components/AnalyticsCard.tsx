@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 
 export function AnalyticsCard({title,value,Icon,color}:{title:string,value:number,Icon:React.ComponentType<{className?: string}> ,color:string }){
     return(

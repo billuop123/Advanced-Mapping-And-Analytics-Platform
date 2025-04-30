@@ -1,6 +1,6 @@
 // src/application/use-cases/CreateCircleUseCase.ts
 import { RectangleRepository } from '@/src/domain/repositories/rectangleDomainRepo';
-import {  handleRectangleOperation } from '@/src/helpers/handleOperations';
+import {  handleOperation, handleRectangleOperation } from '@/src/helpers/handleOperations';
 
 
 export class CreateRectangleUseCase {
@@ -12,7 +12,7 @@ export class CreateRectangleUseCase {
         bounds,
         
       );
-      const result = await handleRectangleOperation(response);
+      const result = await handleOperation(response,"Create Rectangle");
       return result;
    }
 }

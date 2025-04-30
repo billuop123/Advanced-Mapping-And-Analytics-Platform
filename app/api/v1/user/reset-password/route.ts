@@ -10,7 +10,7 @@ export const POST = async (req:Request,res:Response)=>{
             return NextResponse.json({message:"user not found"})
         }
         
-        // Send reset password email
+ 
         await sendEmail({
             email,
             emailType:"RESET",

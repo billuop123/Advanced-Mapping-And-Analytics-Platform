@@ -9,7 +9,6 @@ import { DeletePolygonUseCase } from "@/src/application/use-cases/polygons/Delet
 
 export async function POST(req: Request) {
   
-    // Parse the request body
     const body = await req.json();
 
     if (!body) {

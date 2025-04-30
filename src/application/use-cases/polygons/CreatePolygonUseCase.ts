@@ -1,6 +1,6 @@
-// src/application/use-cases/CreateCircleUseCase.ts
+
 import { PolygonRepository } from '@/src/domain/repositories/polygonDomainRepo';
-import { handlePolygonOperation } from '@/src/helpers/handleOperations';
+import { handleOperation, handlePolygonOperation } from '@/src/helpers/handleOperations';
 import { LatLng } from 'leaflet';
 
 export class CreatePolygonUseCase {
@@ -12,7 +12,7 @@ export class CreatePolygonUseCase {
         coords,
         type
       );
-      const result = await handlePolygonOperation(response);
+      const result = await handleOperation(response,"Create Polygon");
       return result;
    }
 }

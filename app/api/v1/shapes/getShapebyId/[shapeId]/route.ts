@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/app/services/prismaClient";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/route";
-import jwt from "jsonwebtoken";
+import { ShapeRepositoryImpl } from "@/src/infrastructure/repositories/shapeinfraRepo";
+import { FindShapeByIdUseCase } from "@/src/application/use-cases/shapes/FindShapeByIdUseCase";
 
 export async function GET(
   req: Request,
@@ -16,30 +17,15 @@ export async function GET(
 
     const { shapeId } = params;
     
-    console.log("Shape ID from params:", shapeId); // Debug log
 
     if (!shapeId) {
       return NextResponse.json({ error: "Shape ID is required" }, { status: 400 });
     }
 
-    const shape = await prisma.shape.findUnique({
-      where: {
-        id: parseInt(shapeId)
-      },
-      include: {
-        rectangle: true,
-        polygon: true,
-        circle: true,
-        polyline: true,
-        user: true
-      }
-    });
-
-    if (!shape) {
-      return NextResponse.json({ error: "Shape not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(shape, { status: 200 });
+    const shapeRepository = new ShapeRepositoryImpl();
+    const findShapeByIdUseCase = new FindShapeByIdUseCase  (shapeRepository);
+    const result = await findShapeByIdUseCase.execute(Number(shapeId));
+    return result;
   } catch (error) {
     console.error("Error fetching shape:", error);
     return NextResponse.json(
