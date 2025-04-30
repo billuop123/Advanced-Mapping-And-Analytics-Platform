@@ -5,7 +5,7 @@ import { debounce } from "lodash";
 import { useRef } from "react";
 import { useUser } from "../contexts/LoginContext";
 import { useShapes } from "../contexts/shapeContext";
-
+import { API_ENDPOINTS } from "@/src/config/api";
 const _editedDebounced = debounce(
   async (
     e: { layers: L.LayerGroup },
@@ -37,7 +37,7 @@ const _editedDebounced = debounce(
         }
       });
 
-      // Store the initial state of all layers and their popup content
+    
       const initialLayerStates = allLayers.map((layer) => {
         const popup = layer.getPopup();
         const popupContent = popup ? popup.getContent() : null;
@@ -86,10 +86,10 @@ const _editedDebounced = debounce(
         return null;
       });
 
-      // Get the edited layers from the event
+
       const editedLayers = e.layers.getLayers();
 
-      // Create a set of edited layer IDs for easier comparison
+ 
       const editedLayerIds = new Set(
         editedLayers.map((layer) => (layer as any)._leaflet_id)
       );
@@ -99,7 +99,7 @@ const _editedDebounced = debounce(
       for (const layer of allLayers) {
         console.log("Processing layer:", layer);
 
-        // Capture the new state of edited
+
         if (editedLayerIds.has((layer as any)._leaflet_id)) {
           const initialState = initialLayerStates.find(
             (state) => state && state.type === layer.constructor.name
@@ -123,7 +123,7 @@ const _editedDebounced = debounce(
               },
             };
 
-            // Log the edited shape and its initial state
+
             console.log("Edited Rectangle:", newShape);
             console.log("Initial State:", initialState);
 
@@ -135,7 +135,6 @@ const _editedDebounced = debounce(
               data: { coords: coords.flat() },
             };
 
-            // Log the edited shape and its initial state
             console.log("Edited Polygon:", newShape);
             console.log("Initial State:", initialState);
 
@@ -148,7 +147,7 @@ const _editedDebounced = debounce(
               data: { center: { lat: center.lat, lng: center.lng }, radius },
             };
 
-            // Log the edited shape and its initial state
+  
             console.log("Edited Circle:", newShape);
             console.log("Initial State:", initialState);
 
@@ -160,14 +159,14 @@ const _editedDebounced = debounce(
               data: { coords: coords.flat() },
             };
 
-            // Log the edited shape and its initial state
+     
             console.log("Edited Polyline:", newShape);
             console.log("Initial State:", initialState);
 
             shapesToCreate.push(newShape);
           }
         } else {
-          // Only process layers that are not edited
+      
           if (layer instanceof L.Rectangle) {
             const bounds = layer.getBounds();
             shapesToCreate.push({
@@ -240,7 +239,7 @@ const _editedDebounced = debounce(
       if (email) {
         // Delete all existing shapes
         const deleteResponse = await axios.delete(
-          "http://localhost:3001/api/v1/shapes/deleteAllShapes",
+          `${API_ENDPOINTS.SHAPES.DELETE_ALL}`,
           {
             data: { email },
           }
@@ -252,7 +251,7 @@ const _editedDebounced = debounce(
           // Save the new shapes (including the edited ones)
           if (shapesToCreate.length > 0) {
             const createResponse = await axios.post(
-              "http://localhost:3001/api/v1/shapes/batchCreateShapes",
+              `${API_ENDPOINTS.SHAPES.BATCH_CREATE}`,
               {
                 email,
                 shapes: shapesToCreate,

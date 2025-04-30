@@ -3,6 +3,7 @@ import axios from "axios";
 import L, { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 import { useSession } from "next-auth/react";
 import { ShapesState } from "@/src/domain/entities/Map";
+import { API_ENDPOINTS } from "@/src/config/api";
 
 
 
@@ -38,10 +39,10 @@ export const ShapeProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       const [rectanglesResponse, linesResponse, circlesResponse, polygonsResponse] = await Promise.all([
-        axios.get(`http://localhost:3001/api/v1/rectangles/getRectangle`),
-        axios.get(`http://localhost:3001/api/v1/line/getLine`),
-        axios.get(`http://localhost:3001/api/v1/circle/getCircle`),
-        axios.get(`http://localhost:3001/api/v1/polygons/getPolygon`)
+        axios.get(`${API_ENDPOINTS.RECTANGLES.GET_ALL}`),
+        axios.get(`${API_ENDPOINTS.LINES.GET_ALL}`),
+        axios.get(`${API_ENDPOINTS.CIRCLES.GET_ALL}`),
+        axios.get(`${API_ENDPOINTS.POLYGONS.GET_ALL}`)
       ]);
 
       const rectangles = rectanglesResponse.data.map((rect: any) =>

@@ -5,14 +5,14 @@ import { customIconFunction, popupContentStyle, deleteButtonStyle } from "../api
 import { useLocationContext } from "../contexts/LocationContext";
 import axios from "axios";
 import { useUser } from "../contexts/LoginContext";
-
+import { API_ENDPOINTS } from "@/src/config/api";
 export const LocationArray = () => {
   const { allLocationArray, setAllLocationArray } = useLocationContext();
 
   const { email } = useUser();
   const handleDeleteMarker = async (latitude: number, longitude: number) => {
     try {
-      await axios.post("http://localhost:3001/api/v1/marker/deleteMarker", {
+      await axios.post(`${API_ENDPOINTS.MARKERS.DELETE}`, {
         email,
         coordinates: {
           lat: latitude,

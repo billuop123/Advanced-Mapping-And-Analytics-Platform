@@ -61,3 +61,15 @@ export async function handleDeleteAllShapeOperation(response: Response) {
     }
 }
     
+export async function handleDeleteShapeByIdOperation(response: Response) {
+    switch (Number(response.status)) {
+        case 200:
+            return NextResponse.json({message: "Shape deleted successfully"}, {status: 200})
+        case 404:
+            return NextResponse.json({error: "Shape not found"}, {status: 404})
+        case 500:
+            return NextResponse.json({error: "Server Error"}, {status: 500})
+        default:
+            return NextResponse.json({message: "Shape deleted successfully"}, {status: 200})
+    }
+}

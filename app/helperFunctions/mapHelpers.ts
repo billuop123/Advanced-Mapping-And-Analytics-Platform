@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from "@/src/config/api";
 import axios from "axios";
 import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
 
@@ -18,9 +19,9 @@ export const handleDeleteCircle = async (
 ) => {
   try {
     const response = await axios.post(
-      "http://localhost:3001/api/v1/circle/deleteSingleCircle",
+      `${API_ENDPOINTS.CIRCLES.DELETE_SINGLE}`,
       {
-        
+        email,
         center,
         radius,
       }
@@ -110,7 +111,7 @@ export const handleDeletePolygon = async (
   try {
     
     const response = await axios.post(
-      "http://localhost:3001/api/v1/polygons/deleteSinglePolygon",
+      `${API_ENDPOINTS.POLYGONS.DELETE_SINGLE}`,
       {
         email,
         coords: normalizedCoords, 
@@ -152,7 +153,7 @@ export const handleDeleteLine = async (
 
   try {
     const response = await axios.post(
-      "http://localhost:3001/api/v1/line/deleteSingleLine",
+      `${API_ENDPOINTS.LINES.DELETE_SINGLE}`,
       { email, coords }
     );
 
@@ -188,7 +189,7 @@ export const handleDeleteRectangle = async (
 
   try {
     const response = await axios.post(
-      "http://localhost:3001/api/v1/rectangles/deleteSingleRectangle",
+      `${API_ENDPOINTS.RECTANGLES.DELETE_SINGLE}`,
       { email, bounds }
     );
 

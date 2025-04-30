@@ -51,6 +51,7 @@ import {
   DialogTrigger 
 } from "@/components/ui/dialog";
 import { useSession } from "next-auth/react";
+import { API_ENDPOINTS } from "@/src/config/api";
 interface User {
   id: number;
   name: string;
@@ -84,8 +85,8 @@ export default function AdminDashboard() {
 
   useEffect(()=>{
     async function fetchVerificationResponse(){
-      const response=await axios.post("http://localhost:3001/api/v1/isVerified",{
-        userId:session.data?.user.id
+      const response = await axios.post(`${API_ENDPOINTS.USER.IS_VERIFIED}`, {
+        userId: session.data?.user.id
       })
      
       if(!response.data.isVerified){
@@ -106,7 +107,7 @@ useEffect(()=>{
       setLoading(true);
       setError(null);
       const response = await axios.get(
-        `http://localhost:3001/api/v1/user/allusers`
+        `${API_ENDPOINTS.USER.ALL_USERS}`
       );
       setUsers(response.data.users);
     } catch (err) {
@@ -130,7 +131,7 @@ useEffect(()=>{
   const handleDeleteUser = async (userId: number) => {
     try {
       setError(null);
-      await axios.post(`http://localhost:3001/api/v1/user/userDelete`, {
+      await axios.post(`${API_ENDPOINTS.USER.DELETE_USER}`, {
         id: userId,
       });
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
@@ -155,7 +156,7 @@ useEffect(()=>{
       await Promise.all(
         pendingChanges.map(({ userId, newRole }) =>
           axios.patch(
-            `http://localhost:3001/api/v1/user/userUpdateRole/${userId}`,
+            `${API_ENDPOINTS.USER.UPDATE_ROLE(userId.toString())}`,
             {
               role: newRole,
             }

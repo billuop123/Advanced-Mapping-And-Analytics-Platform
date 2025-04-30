@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from "@/src/config/api";
 import { ShapesState } from "@/src/domain/entities/Map";
 import axios from "axios";
 import L, {
@@ -16,7 +17,7 @@ export const _created = async (
     try {
 
       await axios.post(
-        "http://localhost:3001/api/v1/rectangles/createRectangle",
+        `${API_ENDPOINTS.RECTANGLES.CREATE}`,
         {
           email,
           bounds: {
@@ -43,7 +44,7 @@ export const _created = async (
     const coords = layer.getLatLngs() as LatLngExpression[];
     console.log(coords);
     try {
-      await axios.post("http://localhost:3001/api/v1/polygons/createPolygon", {
+      await axios.post(`${API_ENDPOINTS.POLYGONS.CREATE}`, {
         coords: coords,
         type: "POLYGON",
       });
@@ -58,7 +59,7 @@ export const _created = async (
     const center = layer.getLatLng();
     const radius = layer.getRadius();
     try {
-      await axios.post("http://localhost:3001/api/v1/circle/createCircle", {
+      await axios.post(`${API_ENDPOINTS.CIRCLES.CREATE}`, {
         center: center,
         radius: radius,
         type: "CIRCLE",
@@ -73,7 +74,7 @@ export const _created = async (
   } else if (layer instanceof L.Polyline) {
     const coords = layer.getLatLngs() as LatLngExpression[];
     try {
-      await axios.post("http://localhost:3001/api/v1/line/createLine", {
+      await axios.post(`${API_ENDPOINTS.LINES.CREATE}`, {
         coords: coords,
         type: "POLYLINE",
       });
@@ -85,10 +86,8 @@ export const _created = async (
       console.error("Error saving polyline:", error);
     }
   } else if (layer instanceof L.Marker) {
-    // Attach a popup to the marker
+   
     const marker = layer;
     marker.bindPopup("This is a custom popup for the marker").openPopup();
-
-    // Save the marker to the state (if needed)
   }
 };

@@ -1,28 +1,28 @@
 "use client";
+import { useRole } from "@/app/contexts/RoleContext";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger,
-  DialogFooter
-} from "@/components/ui/dialog";
-import { useRole } from "@/app/contexts/RoleContext";
-import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 
 import SelectFilter from "@/app/components/SelectFilter";
-import { ApiResponse } from "@/app/helperFunctions/interfacesAdminDashboard";
+import CirclesView from "@/app/helperFunctions/AdminDashboard/CirclesView";
 import LinesView from "@/app/helperFunctions/AdminDashboard/LinesView";
 import PolygonsView from "@/app/helperFunctions/AdminDashboard/PolygonsView";
-import CirclesView from "@/app/helperFunctions/AdminDashboard/CirclesView";
 import RectangleView from "@/app/helperFunctions/AdminDashboard/RectangleView";
+import { ApiResponse } from "@/app/helperFunctions/interfacesAdminDashboard";
+import { API_ENDPOINTS } from "@/src/config/api";
 const GeometryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<ApiResponse | null>(null);
@@ -46,11 +46,11 @@ const GeometryPage: React.FC = () => {
         if (!id) return;
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:3001/api/v1/user/editing/${id}`
+          `${API_ENDPOINTS.USER.EDITING(id)}`
         );
         setData(response.data);
       } catch (err) {
-        const errorMessage = err instanceof Error
+        const errorMessage = err instanceof Error   
           ? err.message
           : "An error occurred while fetching data";
         setError(errorMessage);
@@ -78,7 +78,7 @@ const GeometryPage: React.FC = () => {
     
     async function fetchVerificationResponse() {
       try {
-        const response = await axios.post("http://localhost:3001/api/v1/isVerified", {
+        const response = await axios.post(  `${API_ENDPOINTS.USER.IS_VERIFIED}`, {
           userId: session.data!.user.id
         });
         
@@ -100,7 +100,7 @@ const GeometryPage: React.FC = () => {
     if (!shapeId) return;
     try {
       await axios.delete(
-        `http://localhost:3001/api/v1/shapes/deleteshapebyid/${shapeId}`
+        `${API_ENDPOINTS.SHAPES.DELETE_BY_ID(shapeId.toString())}`
       );
       setData((prevData) => ({
         polygonInfo:
