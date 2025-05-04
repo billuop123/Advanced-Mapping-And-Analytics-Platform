@@ -50,5 +50,8 @@ export const API_ENDPOINTS = {
     },
     SVG: {
         GET: `${API_BASE_URL}/api/v1/getSvg`
+    },
+    LOCATION:{
+        GET:"/api/v1/users/locationStats"
     }
 }; 

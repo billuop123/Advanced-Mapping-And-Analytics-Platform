@@ -65,7 +65,7 @@ export const Polygons = function () {
                   )
                   .openPopup();
 
-                setTimeout(() => {
+                setTimeout(() => { 
                   const button = document.getElementById(
                     `delete-polygon-${index}`
                   );

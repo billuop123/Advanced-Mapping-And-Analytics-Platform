@@ -123,7 +123,7 @@ export default function MapClient({ ref }: { ref: any }) {
               e.stopPropagation();
               handleMapTypeChange(e.target.value);
             }}
-            className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none bg-white text-black focus:ring-2 focus:ring-blue-500"
           >
             <option value="Default">Default</option>
             <option value="Humanitarian">Humanitarian</option>

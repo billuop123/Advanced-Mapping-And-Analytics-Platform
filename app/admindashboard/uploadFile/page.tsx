@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Upload, FileIcon, XCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface UploadFileProps {
   onUploadSuccess?: (filename: string) => void;
@@ -83,6 +84,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
         onUploadSuccess?.(data.filename);
         setFile(null);
         setName("");
+        toast("File successfully uploaded")
       } else {
         const error = data.error || "Upload failed";
         setError(error);
@@ -92,28 +94,29 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
       const errorMsg = "Failed to upload file";
       setError(errorMsg);
       onUploadError?.(errorMsg);
+      toast("Failed to upload file")
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <Card className="w-full border border-gray-200 shadow-md rounded-xl overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-6 py-5">
-        <CardTitle className="text-2xl font-bold text-gray-800">Upload SVG Icon</CardTitle>
-        <CardDescription className="text-gray-600 mt-1">
+    <Card className="w-full shadow-md rounded-xl overflow-hidden border border-border">
+      <CardHeader className="bg-gradient-to-r from-background to-background/50 border-b border-border px-6 py-5">
+        <CardTitle className="text-2xl font-bold text-foreground">Upload SVG Icon</CardTitle>
+        <CardDescription className="text-muted-foreground mt-1">
           Add an SVG icon to your collection for use in your applications
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-6 bg-white">
+      <CardContent className="p-6 bg-card">
         <div className="space-y-6">
           <div 
             className={`border-2 border-dashed rounded-lg ${
               isDragging 
-                ? "border-blue-500 bg-blue-50" 
+                ? "border-primary bg-primary/10" 
                 : file 
-                  ? "border-green-300 bg-green-50" 
-                  : "border-gray-300 bg-gray-50"
+                  ? "border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20" 
+                  : "border-muted bg-muted/50"
             } transition-colors duration-200 ease-in-out`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -123,17 +126,17 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
               {file ? (
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <FileIcon className="h-5 w-5 text-green-600" />
+                    <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                      <FileIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-700">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                      <p className="text-sm font-medium text-foreground">{file.name}</p>
+                      <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
                     </div>
                   </div>
                   <button 
                     onClick={clearFile}
-                    className="text-gray-500 hover:text-red-500 transition-colors"
+                    className="text-muted-foreground hover:text-destructive transition-colors"
                     disabled={isUploading}
                   >
                     <XCircle className="h-5 w-5" />
@@ -141,11 +144,11 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
                 </div>
               ) : (
                 <>
-                  <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-                    <Upload className="h-8 w-8 text-blue-600" />
+                  <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center mb-2">
+                    <Upload className="h-8 w-8 text-primary" />
                   </div>
-                  <p className="text-lg font-medium text-gray-700">Drag and drop your SVG file here</p>
-                  <p className="text-sm text-gray-500 text-center">or click to select a file from your device</p>
+                  <p className="text-lg font-medium text-foreground">Drag and drop your SVG file here</p>
+                  <p className="text-sm text-muted-foreground text-center">or click to select a file from your device</p>
                 </>
               )}
               
@@ -161,7 +164,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
               {!file && (
                 <Button 
                   variant="outline" 
-                  className="mt-2 bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+                  className="mt-2"
                   onClick={() => document.getElementById("file")?.click()}
                   disabled={isUploading}
                 >
@@ -172,9 +175,9 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-gray-700 flex items-center justify-between">
+            <Label htmlFor="name" className="text-sm font-medium text-foreground flex items-center justify-between">
               <span>Icon Name</span>
-              {name && <span className="text-xs text-gray-500">{name.length}/50</span>}
+              {name && <span className="text-xs text-muted-foreground">{name.length}/50</span>}
             </Label>
             <Input
               id="name"
@@ -183,14 +186,14 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. dashboard-icon, user-profile"
               disabled={isUploading || !file}
-              className="focus-visible:ring-blue-500 shadow-sm"
+              className="focus-visible:ring-primary shadow-sm"
               maxLength={50}
             />
           </div>
 
           {error && (
-            <Alert variant="destructive" className="bg-red-50 border border-red-200 rounded-lg">
-              <AlertDescription className="text-sm text-red-700 flex items-center gap-2">
+            <Alert variant="destructive" className="border rounded-lg">
+              <AlertDescription className="text-sm flex items-center gap-2">
                 <XCircle className="h-4 w-4" />
                 {error}
               </AlertDescription>
@@ -200,7 +203,7 @@ export default function UploadFile({ onUploadSuccess, onUploadError }: UploadFil
           <Button
             onClick={handleUpload}
             disabled={!file || !name || isUploading}
-            className="w-full bg-slate-600 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-lg shadow-sm transition-all duration-200 ease-in-out hover:shadow"
+            className="w-full"
           >
             {isUploading ? (
               <div className="flex items-center justify-center gap-2">

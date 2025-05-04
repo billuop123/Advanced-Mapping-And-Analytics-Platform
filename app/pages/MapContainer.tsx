@@ -8,21 +8,25 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { LatLng, LatLngBounds, LatLngExpression } from "leaflet";
+
 export type ShapesState = {
   polygons: LatLngExpression[][];
   circles: { center: LatLng; radius: number }[];
   polylines: LatLngExpression[][];
   rectangles: LatLngBounds[];
 };
+
 const MapDashboardContainer = () => {
   const [isDashboardVisible, setIsDashboardVisible] = useState(false);
   const mapRef = useRef<{ handleResize: () => void } | null>(null);
   const { status, email } = useUser();
   const session = useSession();
   const router = useRouter(); 
+  
   const toggleDashboard = () => {
     setIsDashboardVisible((prev) => !prev);
   };
+  
   useEffect(() => {
     if (status === "loading") return;
     if (!email) {
@@ -40,13 +44,10 @@ const MapDashboardContainer = () => {
     return () => {
         window.removeEventListener("popstate", handlePopState);
     };
-}, []);
+  }, []);
 
   useEffect(() => {
-    
     if (mapRef.current) {
-    
-  
       if (typeof mapRef.current.handleResize === "function") {
         mapRef.current.handleResize();
       }
@@ -67,20 +68,20 @@ const MapDashboardContainer = () => {
   }, [session]);
 
   return (
-    <div className="flex flex-row h-screen bg-white relative">
+    <div className="flex flex-row h-screen bg-background relative">
       {/* Arrow Icon (Center Left of Screen) */}
       {!isDashboardVisible && (
         <div
-          className="fixed left-0 top-1/2 transform -translate-y-1/2 cursor-pointer bg-blue-600 p-3 rounded-r-lg shadow-lg hover:bg-blue-700 transition-all duration-200 z-[1000]"
+          className="fixed left-0 top-1/2 transform -translate-y-1/2 cursor-pointer bg-primary p-3 rounded-r-lg shadow-lg hover:bg-primary/90 transition-all duration-200 z-[1000]"
           onClick={toggleDashboard}
         >
-          <BiRightArrowAlt className="text-2xl text-white" />
+          <BiRightArrowAlt className="text-2xl text-primary-foreground" />
         </div>
       )}
 
       {/* Dashboard Section (Left Side) */}
       <div
-        className={`w-1/3 bg-white shadow-xl flex flex-col transition-all duration-300 ease-in-out transform ${
+        className={`w-1/3 bg-background border-r border-border shadow-xl flex flex-col transition-all duration-300 ease-in-out transform ${
           isDashboardVisible ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ 
@@ -92,16 +93,16 @@ const MapDashboardContainer = () => {
         }}
       >
         <div className="p-6 h-full overflow-y-auto">
-        {isDashboardVisible && <Dashboard />}
+          {isDashboardVisible && <Dashboard />}
         </div>
 
         {/* Arrow Icon (Middle Right of Dashboard) */}
         {isDashboardVisible && (
           <div
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 cursor-pointer bg-blue-600 p-3 rounded-l-lg shadow-lg hover:bg-blue-700 transition-all duration-200"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 cursor-pointer bg-primary p-3 rounded-l-lg shadow-lg hover:bg-primary/90 transition-all duration-200"
             onClick={toggleDashboard}
           >
-            <BiLeftArrowAlt className="text-2xl text-white" />
+            <BiLeftArrowAlt className="text-2xl text-primary-foreground" />
           </div>
         )}
       </div>

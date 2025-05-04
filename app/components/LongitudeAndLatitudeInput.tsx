@@ -38,6 +38,7 @@ export const LongitudeAndLatitudeInput = function () {
     >
       <div style={{ display: "flex", gap: "5px" }}>
         <input
+        className="bg-white dark:bg-white text-black dark:text-black"
           type="text"
           placeholder="Latitude"
           value={latitude}
@@ -50,6 +51,7 @@ export const LongitudeAndLatitudeInput = function () {
           }}
         />
         <input
+        className="bg-white dark:bg-white text-black dark:text-black"
           type="text"
           placeholder="Longitude"
           value={longitude}

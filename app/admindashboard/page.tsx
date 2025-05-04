@@ -52,6 +52,7 @@ import {
 } from "@/components/ui/dialog";
 import { useSession } from "next-auth/react";
 import { API_ENDPOINTS } from "@/src/config/api";
+import { toast } from "sonner";
 interface User {
   id: number;
   name: string;
@@ -85,10 +86,11 @@ export default function AdminDashboard() {
 
   useEffect(()=>{
     async function fetchVerificationResponse(){
+  
       const response = await axios.post(`${API_ENDPOINTS.USER.IS_VERIFIED}`, {
         userId: session.data?.user.id
       })
-     
+      if(response.data.isVerified==undefined) return;
       if(!response.data.isVerified){
         router.push("/sendEmailVerification")
       }
@@ -97,11 +99,12 @@ export default function AdminDashboard() {
   
   },[])
 useEffect(()=>{
+  if(!role) return;
   if(role!=="admin")
   {
   window.location.href="/"
   }
-})
+},[role])
   async function fetchUsers() {
     try {
       setLoading(true);
@@ -140,9 +143,11 @@ useEffect(()=>{
       );
       setDeleteDialogOpen(false);
       setUserToDelete(null);
+      toast("User Deleted Successfully")
     } catch (err) {
       setError(`Failed to delete ${users.find((u) => u.id === userId)?.name}`);
       console.error("Failed to delete user:", err);
+      toast("Failed to delete User")
     }
   };
 
@@ -256,7 +261,7 @@ useEffect(()=>{
               onClick={(e) => e.stopPropagation()}
             >
               <DropdownMenuItem 
-                className="text-red-600"
+                className="text-red-600 dark:text-red-400"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -289,13 +294,13 @@ useEffect(()=>{
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
       </div>
     );
   }
 
   return (
-     <div className="p-6 bg-gray-100 min-h-screen">
+     <div className="p-6 bg-gray-100 dark:bg-black min-h-screen">
     {/* Delete User Dialog */}
     <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
       <DialogContent>
@@ -328,7 +333,7 @@ useEffect(()=>{
 
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-slate-400 dark:text-slate-300">Admin Dashboard</h1>
         <div className="flex items-center gap-4">
         </div>
       
@@ -353,7 +358,7 @@ useEffect(()=>{
         </Alert>
       )}
 
-      <div className="bg-white rounded-lg shadow-md">
+      <div className="bg-white dark:bg-neutral-950 rounded-lg shadow-md">
         <div className="p-4 flex gap-4">
           <Input
             placeholder="Filter by name..."
@@ -415,8 +420,8 @@ useEffect(()=>{
                     pendingChanges.some(
                       (change) => change.userId === row.original.id
                     )
-                      ? "bg-blue-50 cursor-pointer"
-                      : "cursor-pointer"
+                      ? "bg-black dark:bg-black cursor-pointer"
+                      : "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
                   }
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -443,7 +448,7 @@ useEffect(()=>{
         </Table>
 
         <div className="flex items-center justify-end space-x-2 p-4">
-          <div className="flex-1 text-sm text-gray-500">
+          <div className="flex-1 text-sm text-gray-500 dark:text-gray-400">
             {table.getFilteredRowModel().rows.length} user(s)
           </div>
           <div className="space-x-2">

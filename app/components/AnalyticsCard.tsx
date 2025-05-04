@@ -2,7 +2,7 @@
 
 export function AnalyticsCard({title,value,Icon,color}:{title:string,value:number,Icon:React.ComponentType<{className?: string}> ,color:string }){
     return(
-        <div className={`bg-gradient-to-br from-${color}-50 to-indigo-50 dark:from-slate-800 dark:to-indigo-950 rounded-lg p-4 shadow-sm`}>
+        <div className={`dark:from-slate-800 bg-background rounded-lg p-4 shadow-sm border`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-md">

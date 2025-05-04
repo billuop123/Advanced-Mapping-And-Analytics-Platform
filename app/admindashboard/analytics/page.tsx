@@ -8,6 +8,7 @@ import { MyResponsiveBar } from "@/app/components/MyResponsiveBar"
 import { MyResponsivePie } from "@/app/components/MyResponsivePie"
 import { AnalyticsSidebar } from "@/app/components/AnalyticsSidebar"
 import { useRole } from "@/app/contexts/RoleContext"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface UserStats {
   totalUsers: number;
@@ -37,13 +38,15 @@ export default function analytics(){
         editorUsers: 0,
         viewerUsers: 0
     });
-    const {role}=useRole()
-    useEffect(()=>{
-        if(role!=="admin")
-        {
-        window.location.href="/"
+    const {role} = useRole()
+    
+    useEffect(() => {
+        if(!role) return
+        if(role !== "admin") {
+            window.location.href = "/"
         }
-      })
+    }, [role])
+    
     const data = [
         {
           "id": "Rectangle",
@@ -70,6 +73,7 @@ export default function analytics(){
           "color": "hsl(102, 70%, 50%)"
         }
     ]
+    
     const data2 = [
         {
           "role": "Editor",
@@ -80,6 +84,7 @@ export default function analytics(){
           "total": stats.viewerUsers,
         }
     ]
+    
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
@@ -109,7 +114,7 @@ export default function analytics(){
     }, []);
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-background">
             <AnalyticsSidebar 
                 totalUsers={stats.editorUsers + stats.viewerUsers}
                 totalSVGs={stats.totalSVGs + 6}
@@ -136,28 +141,31 @@ export default function analytics(){
                             color="green"
                         />           
                     </div>
-
-                    {/* Charts Section */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Shape Distribution</h2>
-                            <div className="h-[400px]">
-                                <MyResponsivePie data={data}/>
-                            </div>
-                        </div>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Shape Distribution</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[400px]">
+                                    <MyResponsivePie data={data}/>
+                                </div>
+                            </CardContent>
+                        </Card>
                         
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h2 className="text-xl font-semibold mb-4 text-gray-800">Total editor vs Total viewer</h2>
-                            <div className="h-[400px]">
-                                <MyResponsiveBar data2={data2}/>
-                            </div>
-                        </div>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Total Editor vs Total Viewer</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[400px]">
+                                    <MyResponsiveBar data2={data2}/>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>
         </div>
     )
 }
-
-
-

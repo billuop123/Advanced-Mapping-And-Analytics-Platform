@@ -23,6 +23,8 @@ import PolygonsView from "@/app/helperFunctions/AdminDashboard/PolygonsView";
 import RectangleView from "@/app/helperFunctions/AdminDashboard/RectangleView";
 import { ApiResponse } from "@/app/helperFunctions/interfacesAdminDashboard";
 import { API_ENDPOINTS } from "@/src/config/api";
+import { toast } from "sonner";
+
 const GeometryPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<ApiResponse | null>(null);
@@ -82,7 +84,6 @@ const GeometryPage: React.FC = () => {
           userId: session.data!.user.id
         });
         
-
         if (response.data && typeof response.data.isVerified === 'boolean') {
           if (!response.data.isVerified) {
             router.push("/sendEmailVerification");
@@ -108,6 +109,7 @@ const GeometryPage: React.FC = () => {
       }));
       setDeleteConfirmOpen(false);
       setShapeToDelete(null);
+      toast("Shape successfully deleted")
     } catch (err) {
       const errorMessage = err instanceof Error
         ? err.message
@@ -122,14 +124,12 @@ const GeometryPage: React.FC = () => {
     setDeleteConfirmOpen(true);
   };
 
-
   const shapeCounts = {
     RECTANGLE: 0,
     CIRCLE: 0,
     POLYGON: 0,
     POLYLINE: 0,
   };
-
 
   if (data) {
     data.polygonInfo.forEach((shape) => {
@@ -138,7 +138,6 @@ const GeometryPage: React.FC = () => {
       }
     });
   }
-
 
   const filteredShapes = data?.polygonInfo.filter((shape) => {
     if (selectedShapeType === "ALL") return true;
@@ -167,7 +166,7 @@ const GeometryPage: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -175,16 +174,15 @@ const GeometryPage: React.FC = () => {
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">No data available</div>
+        <div className="text-muted-foreground">No data available</div>
       </div>
     );
   }
 
-
   if (data.polygonInfo.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-600">No shapes found for this user.</div>
+        <div className="text-muted-foreground">No shapes found for this user.</div>
       </div>
     );
   }
@@ -193,10 +191,9 @@ const GeometryPage: React.FC = () => {
     <>
       <div className="container mx-auto p-4">
         <div className="mb-4 flex items-center justify-between">
-        <SelectFilter selectedShapeType={selectedShapeType} setSelectedShapeType={setSelectedShapeType} />
+          <SelectFilter selectedShapeType={selectedShapeType} setSelectedShapeType={setSelectedShapeType} />
         </div>
 
-  
         <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
           <DialogContent>
             <DialogHeader>
@@ -225,7 +222,6 @@ const GeometryPage: React.FC = () => {
           </DialogContent>
         </Dialog>
 
-
         <Dialog open={isErrorDialogOpen} onOpenChange={setIsErrorDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -239,11 +235,10 @@ const GeometryPage: React.FC = () => {
         </Dialog>
 
         <div className="p-6 max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold mb-6">Geometry Information Display</h1>
+          <h1 className="text-2xl font-bold mb-6 text-foreground">Geometry Information Display</h1>
 
- 
-          <section className="mb-8 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">User Information</h2>
+          <section className="mb-8 bg-card border border-border p-4 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">User Information</h2>
             <div className="flex items-center gap-4">
               <Image
                 width={12}
@@ -253,46 +248,45 @@ const GeometryPage: React.FC = () => {
                 className="w-12 h-12 rounded-full"
               />
               <div>
-                <p className="font-medium">{data.polygonInfo[0].user.name}</p>
-                <p className="text-gray-600">{data.polygonInfo[0].user.email}</p>
-                <p className="text-gray-600">
+                <p className="font-medium text-foreground">{data.polygonInfo[0].user.name}</p>
+                <p className="text-muted-foreground">{data.polygonInfo[0].user.email}</p>
+                <p className="text-muted-foreground">
                   Role: {data.polygonInfo[0].user.role}
                 </p>
               </div>
             </div>
           </section>
 
-
-          <section className="mb-8 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">Shape Distribution</h2>
+          <section className="mb-8 bg-card border border-border p-4 rounded-lg shadow">
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Shape Distribution</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Object.entries(shapeCounts).map(([type, count]) => (
-                <div key={type} className="bg-gray-50 p-4 rounded">
-                  <h3 className="font-medium">{type}</h3>
-                  <p className="text-2xl font-bold">{count}</p>
+                <div key={type} className="bg-muted/50 p-4 rounded">
+                  <h3 className="font-medium text-foreground">{type}</h3>
+                  <p className="text-2xl font-bold text-foreground">{count}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {hasShapes && (
-            <section className="bg-white p-4 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4">
+            <section className="bg-card border border-border p-4 rounded-lg shadow">
+              <h2 className="text-xl font-semibold mb-4 text-foreground">
                 Detailed Shape Information
               </h2>
 
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">ID</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Details</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-card divide-y divide-border">
                     <RectangleView rectangles={rectangles} handleViewShape={handleViewShape} openDeleteConfirm={openDeleteConfirm} />
                     <CirclesView circles={circles} handleViewShape={handleViewShape} openDeleteConfirm={openDeleteConfirm} />
                     <PolygonsView polygons={polygons} handleViewShape={handleViewShape} openDeleteConfirm={openDeleteConfirm} />

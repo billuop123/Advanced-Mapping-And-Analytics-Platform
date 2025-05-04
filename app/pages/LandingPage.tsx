@@ -5,13 +5,14 @@ import { MyResponsiveBar } from "@/app/components/MyResponsiveBar";
 import { MyResponsivePie } from "@/app/components/MyResponsivePie";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { API_ENDPOINTS } from "@/src/config/api";
 import axios from "axios";
-import { BarChart3, Circle, Layers, Map, MapPin, Shield, Square, Users } from "lucide-react";
+import { BarChart3, Circle, Layers, Map, MapPin, Moon, Shield, Square, Sun, Users } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 
 const features = [
   {
@@ -49,6 +50,7 @@ export default function LandingPage() {
     { id: "Polygons", value: 0, color: "hsl(60, 70%, 50%)" },
     {id:"Polylines",value:0,color:"hsl(300, 70%, 50%)"}
   ]);
+  const { theme, setTheme } = useTheme()
   const [pieData, setPieData] = useState<{ role: string; total: number }[]>([]);
   const [typeOptions, setTypeOptions] = useState<{ id: number; name: string; icon: string }[]>([
     { id: 100, name: "Hospital", icon: "/hospital.svg" },
@@ -122,7 +124,7 @@ useEffect(()=>{
 
     const fetchLocationData = async () => {
       try {
-        const response = await axios.get("/api/v1/users/locationStats");
+        const response = await axios.get(API_ENDPOINTS.LOCATION.GET);
         const locations = response.data.locations;
        
   
@@ -168,7 +170,7 @@ useEffect(()=>{
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <Button size="lg" disabled>
           Loading...
         </Button>
@@ -178,81 +180,82 @@ useEffect(()=>{
 
   if (!session) {
     return (
-      <div className="min-h-screen">
-        {/* Hero Section */}
-        <div className="relative">
-          <div 
-            className="absolute inset-0 bg-cover bg-center z-0" 
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
-            }}
-          >
-            <div className="absolute inset-0 bg-black/60"></div>
-          </div>
+      // <div className="min-h-screen bg-background">
+      //   {/* Hero Section */}
+      //   <div className="relative">
+      //     <div 
+      //       className="absolute inset-0 bg-cover bg-center z-0" 
+      //       style={{
+      //         backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
+      //       }}
+      //     >
+      //       <div className="absolute inset-0 bg-black/60"></div>
+      //     </div>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-            <div className="text-center">
-              <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
-                <span className="block">Advanced Mapping</span>
-                <span className="block text-blue-400">and Analytics Platform</span>
-              </h1>
-              <p className="mt-6 text-xl text-gray-200 max-w-3xl mx-auto">
-                A powerful platform for geographical data visualization, analysis, and management.
-                Perfect for businesses and organizations that need to make data-driven decisions.
-              </p>
-              <div className="mt-10 flex justify-center gap-4">
-                <Link href="/api/auth/signin">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/api/auth/signup">
-                  <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20">
-                    Create Account
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+      //     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+      //       <div className="text-center">
+      //         <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+      //           <span className="block">Advanced Mapping</span>
+      //           <span className="block text-blue-400">and Analytics Platform</span>
+      //         </h1>
+      //         <p className="mt-6 text-xl text-gray-200 max-w-3xl mx-auto">
+      //           A powerful platform for geographical data visualization, analysis, and management.
+      //           Perfect for businesses and organizations that need to make data-driven decisions.
+      //         </p>
+      //         <div className="mt-10 flex justify-center gap-4">
+      //           <Link href="/api/auth/signin">
+      //             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+      //               Sign In
+      //             </Button>
+      //           </Link>
+      //           <Link href="/api/auth/signup">
+      //             <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20">
+      //               Create Account
+      //             </Button>
+      //           </Link>
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
 
-        {/* Features Section */}
-        <div className="bg-white py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                Platform Features
-              </h2>
-              <p className="mt-4 text-lg text-gray-500">
-                Everything you need to manage and analyze your geographical data
-              </p>
-            </div>
+      //   {/* Features Section */}
+      //   {/* <div className="py-24 bg-background">
+      //     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      //       <div className="text-center">
+      //         <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
+      //           Platform Features
+      //         </h2>
+      //         <p className="mt-4 text-lg text-muted-foreground">
+      //           Everything you need to manage and analyze your geographical data
+      //         </p>
+      //       </div>
 
-            <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-                        {feature.icon}
-                      </div>
-                      <CardTitle>{feature.title}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription>{feature.description}</CardDescription>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      //       <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      //         {features.map((feature, index) => (
+      //           <Card key={index} className="hover:shadow-lg transition-shadow bg-card">
+      //             <CardHeader>
+      //               <div className="flex items-center gap-4">
+      //                 <div className="p-3 bg-blue-100 rounded-lg text-blue-600 dark:bg-blue-400 dark:text-blue-300">
+      //                   {feature.icon}
+      //                 </div>
+      //                 <CardTitle className="text-foreground">{feature.title}</CardTitle>
+      //               </div>
+      //             </CardHeader>
+      //             <CardContent>
+      //               <CardDescription className="text-muted-foreground">{feature.description}</CardDescription>
+      //             </CardContent>
+      //           </Card>
+      //         ))}
+      //       </div>
+      //     </div>
+      //   </div> */}
+      // </div>
+      <div></div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative">
         <div 
@@ -275,7 +278,7 @@ useEffect(()=>{
             </p>
             <div className="mt-10 flex justify-center gap-4">
               <Link href="/map">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white dark:text-white">
                   Go to Map
                 </Button>
               </Link>
@@ -285,13 +288,13 @@ useEffect(()=>{
       </div>
 
       {/* Analytics Overview Section */}
-      <div className="bg-white py-16">
+      <div className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+            <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
               Map Analytics
             </h2>
-            <p className="mt-4 text-lg text-gray-500">
+            <p className="mt-4 text-lg text-muted-foreground">
               Insights into map shapes and location distribution
             </p>
           </div>
@@ -318,9 +321,9 @@ useEffect(()=>{
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-            <Card className="p-6">
+            <Card className="p-6 bg-card">
               <CardHeader>
-                <CardTitle>Shape Distribution</CardTitle>
+                <CardTitle className="text-foreground">Shape Distribution</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[400px]">
@@ -329,9 +332,9 @@ useEffect(()=>{
               </CardContent>
             </Card>
 
-            <Card className="p-6">
+            <Card className="p-6 bg-card">
               <CardHeader>
-                <CardTitle>Location Distribution</CardTitle>
+                <CardTitle className="text-foreground">Location Distribution</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[400px]">
@@ -344,20 +347,41 @@ useEffect(()=>{
       </div>
 
       {/* Logout Button */}
-      <div className="bg-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <Button
-              onClick={() => signOut()}
-              size="lg"
-              variant="outline"
-              className="border-gray-300 hover:bg-gray-100"
-            >
-              Logout
-            </Button>
-          </div>
+      <div className="py-8 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center gap-4">
+          <Button
+            onClick={() => signOut()}
+            size="lg"
+            variant="outline"
+            className="border-border hover:bg-accent"
+          >
+            Logout
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-card border-border">
+              <DropdownMenuItem 
+                onClick={() => setTheme("light")}
+                className="cursor-pointer hover:bg-accent focus:bg-accent"
+              >
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setTheme("dark")}
+                className="cursor-pointer hover:bg-accent focus:bg-accent"
+              >
+                Dark
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
   );
-} 
+}
