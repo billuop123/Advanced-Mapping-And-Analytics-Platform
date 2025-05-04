@@ -74,7 +74,7 @@ export default function SignIn() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign in</CardTitle>
+            <CardTitle className="text-2xl text-center dark:text-black">Sign in</CardTitle>
             <CardDescription className="text-center">
               Enter your credentials to access your account
             </CardDescription>
@@ -138,10 +138,10 @@ export default function SignIn() {
               <Button
                 type="submit"
                 disabled={isLoading || !!emailError}
-                className="w-full"
+                className="w-full "
               >
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Signing in...
                   </div>
@@ -154,7 +154,7 @@ export default function SignIn() {
             <div className="mt-4 text-center">
               <Link
                 href="/api/auth/signup"
-                className="text-sm font-medium text-blue-600 hover:underline"
+                className="text-sm font-medium text-blue-600 hover:underline dark:text-black"
               >
                 Sign up
               </Link>

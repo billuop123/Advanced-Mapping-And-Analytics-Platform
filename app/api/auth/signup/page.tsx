@@ -102,7 +102,7 @@ export default function Signup() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Sign up</CardTitle>
+            <CardTitle className="text-2xl text-center dark:text-black">Sign up</CardTitle>
             <CardDescription className="text-center">
               Enter your information to create an account
             </CardDescription>
@@ -124,12 +124,12 @@ export default function Signup() {
                 </label>
                 <Input
                   id="name"
-                  type="text"
+                  type="email"
                   required
                   placeholder="Enter your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full"
+                  className="w-full dark:text-black"
                 />
               </div>
 
@@ -147,7 +147,7 @@ export default function Signup() {
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full ${emailError ? 'border-red-500' : ''}`}
+                  className={`w-full dark:text-black ${emailError ? 'border-red-500' : ''}`}
                 />
                 {emailError && (
                   <p className="text-sm text-red-500 mt-1">{emailError}</p>
@@ -169,7 +169,7 @@ export default function Signup() {
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pr-10"
+                    className="w-full pr-10 dark:text-black"
                   />
                   <button
                     type="button"
@@ -196,7 +196,7 @@ export default function Signup() {
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pr-10"
+                    className="w-full pr-10 dark:text-black"
                   />
                   <button
                     type="button"
@@ -214,10 +214,10 @@ export default function Signup() {
               <Button
                 type="submit"
                 disabled={isLoading || !passwordsMatch || !email || !name || !password || !!emailError}
-                className="w-full"
+                className="w-full dark:text-black"
               >
                 {isLoading ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 ">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Creating account...
                   </div>
@@ -242,7 +242,7 @@ export default function Signup() {
               <div className="mt-4 text-center">
                 <Link 
                   href="/api/auth/signin" 
-                  className="text-blue-600 hover:text-blue-800 text-sm hover:underline"
+                  className="text-blue-600 hover:text-blue-800 text-sm hover:underline dark:text-black"
                 >
                   Sign in
                 </Link>
