@@ -1,15 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Map, Layers, Users, Shield, BarChart3, MapPin, Circle, Square, Triangle, Star } from "lucide-react";
-import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { AnalyticsCard } from "@/app/components/AnalyticsCard";
 import { MyResponsiveBar } from "@/app/components/MyResponsiveBar";
 import { MyResponsivePie } from "@/app/components/MyResponsivePie";
-import { AnalyticsCard } from "@/app/components/AnalyticsCard";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { API_ENDPOINTS } from "@/src/config/api";
 import axios from "axios";
+import { BarChart3, Circle, Layers, Map, MapPin, Shield, Square, Users } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 
 const features = [
@@ -71,7 +72,7 @@ export default function LandingPage() {
     if(!session)return 
     const fetchSVGs = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/v1/getSvg");
+        const response = await axios.get(API_ENDPOINTS.SVG.GET);
         setTypeOptions([...typeOptions, ...response.data]);
       } catch (error) {
         console.error("Error fetching SVGs:", error);

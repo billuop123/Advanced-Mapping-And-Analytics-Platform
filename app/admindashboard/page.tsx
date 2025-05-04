@@ -295,178 +295,178 @@ useEffect(()=>{
   }
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Delete User Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete the user {users.find(u => u.id === userToDelete)?.name}?
-              This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setDeleteDialogOpen(false);
-                setUserToDelete(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive" 
-              onClick={() => userToDelete && handleDeleteUser(userToDelete)}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
-          <div className="flex items-center gap-4">
-          </div>
-        
-          <Button
-            onClick={handleSaveChanges}
-            disabled={saving || pendingChanges.length === 0}
+     <div className="p-6 bg-gray-100 min-h-screen">
+    {/* Delete User Dialog */}
+    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete User</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete the user {users.find(u => u.id === userToDelete)?.name}?
+            This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => {
+              setDeleteDialogOpen(false);
+              setUserToDelete(null);
+            }}
           >
-            {saving ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Saving...</span>
-              </div>
-            ) : (
-              `Save Changes (${pendingChanges.length})`
-            )}
+            Cancel
           </Button>
+          <Button 
+            variant="destructive" 
+            onClick={() => userToDelete && handleDeleteUser(userToDelete)}
+          >
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-slate-400">Admin Dashboard</h1>
+        <div className="flex items-center gap-4">
+        </div>
+      
+        <Button
+          onClick={handleSaveChanges}
+          disabled={saving || pendingChanges.length === 0}
+        >
+          {saving ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Saving...</span>
+            </div>
+          ) : (
+            `Save Changes (${pendingChanges.length})`
+          )}
+        </Button>
+      </div>
+
+      {error && (
+        <Alert variant="destructive">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <div className="bg-white rounded-lg shadow-md">
+        <div className="p-4 flex gap-4">
+          <Input
+            placeholder="Filter by name..."
+            value={
+              (table.getColumn("name")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+          <Select
+            value={
+              (table.getColumn("role")?.getFilterValue() as string) ?? ""
+            }
+            onValueChange={(value) =>
+              table
+                .getColumn("role")
+                ?.setFilterValue(value === "all" ? undefined : value)
+            }
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Filter by role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="editor">Editors</SelectItem>
+              <SelectItem value="viewer">Viewers</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        <div className="bg-white rounded-lg shadow-md">
-          <div className="p-4 flex gap-4">
-            <Input
-              placeholder="Filter by name..."
-              value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-            <Select
-              value={
-                (table.getColumn("role")?.getFilterValue() as string) ?? ""
-              }
-              onValueChange={(value) =>
-                table
-                  .getColumn("role")
-                  ?.setFilterValue(value === "all" ? undefined : value)
-              }
-            >
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Filter by role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="editor">Editors</SelectItem>
-                <SelectItem value="viewer">Viewers</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  onClick={() =>
+                    router.push(`/admindashboard/${row.original.id}`)
+                  }
+                  className={
+                    pendingChanges.some(
+                      (change) => change.userId === row.original.id
+                    )
+                      ? "bg-blue-50 cursor-pointer"
+                      : "cursor-pointer"
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    onClick={() =>
-                      router.push(`/admindashboard/${row.original.id}`)
-                    }
-                    className={
-                      pendingChanges.some(
-                        (change) => change.userId === row.original.id
-                      )
-                        ? "bg-blue-50 cursor-pointer"
-                        : "cursor-pointer"
-                    }
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
 
-          <div className="flex items-center justify-end space-x-2 p-4">
-            <div className="flex-1 text-sm text-gray-500">
-              {table.getFilteredRowModel().rows.length} user(s)
-            </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
+        <div className="flex items-center justify-end space-x-2 p-4">
+          <div className="flex-1 text-sm text-gray-500">
+            {table.getFilteredRowModel().rows.length} user(s)
+          </div>
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 }

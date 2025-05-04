@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import MapClient from "../pages/MapClient"; // Your MapClient component
-import Dashboard from "./Dashboard"; // Your Dashboard component
+import MapClient from "./MapClient"; // Your MapClient component
+import Dashboard from "../components/Dashboard"; // Your Dashboard component
 import { BiLeftArrowAlt, BiRightArrowAlt } from "react-icons/bi";
 import { useUser } from "../contexts/LoginContext";
 import { useRouter } from "next/navigation";

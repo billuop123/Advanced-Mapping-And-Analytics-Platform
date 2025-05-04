@@ -20,7 +20,7 @@ import { usePosition } from "../contexts/PositionContext";
 import ChangeCenter from "../services/ChangeCenter";
 import { DetectClick } from "../services/DetectClick";
 import { EditControls } from "../services/EditControl";
-import { LivePositionButton } from "../components/LivePosition.Button";
+import { LivePositionButton } from "../components/LivePositionButton";
 import { LongitudeAndLatitudeInput } from "../components/LongitudeAndLatitudeInput";
 import { useRole } from "../contexts/RoleContext";
 import { useShapes } from "../contexts/shapeContext";

@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Info, Building2, Church, GraduationCap, ShoppingBag, Trees, MapPin as MapPinIcon } from "lucide-react";
+import { API_ENDPOINTS } from "@/src/config/api";
 
 const Dashboard = () => {
   const [type, setType] = useState<string>("");
@@ -42,7 +43,7 @@ const Dashboard = () => {
     };
 
     try {
-      await axios.post("http://localhost:3001/api/v1/marker/createMarker", {
+      await axios.post(API_ENDPOINTS.MARKERS.CREATE, {
         newLocation,
         email,
       });
@@ -55,7 +56,7 @@ const Dashboard = () => {
   };
   useEffect(() => {
     const fetchSVGs = async () => {
-      const response = await axios.get("http://localhost:3001/api/v1/getSvg");
+      const response = await axios.get(API_ENDPOINTS.SVG.GET);
       setTypeOptions([...typeOptions,...response.data]);
     };
     fetchSVGs();
