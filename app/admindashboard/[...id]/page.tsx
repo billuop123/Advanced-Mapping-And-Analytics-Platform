@@ -39,7 +39,9 @@ const GeometryPage: React.FC = () => {
   const router = useRouter();
 
   const handleViewShape = (shapeId: number) => {
-    window.open(`/admindashboard/newMap?shapeId=${shapeId}`, '_blank');
+    if(typeof window !== "undefined"){
+      window.open(`/admindashboard/newMap?shapeId=${shapeId}`, '_blank');
+    }
   };
 
   useEffect(() => {
@@ -70,7 +72,9 @@ const GeometryPage: React.FC = () => {
   useEffect(() => {
     if (!role) return;
     if (role != "admin") {
-      window.location.href = "/";
+      if(typeof window !== "undefined"){
+        window.location.href = "/";
+      }
     }
   }, [role]);
 

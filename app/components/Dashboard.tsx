@@ -80,16 +80,7 @@ const Dashboard = () => {
             <MapPin className="h-8 w-8 text-primary" />
           </div>
           
-          {role === "admin" && (
-            <Link 
-              href="/admindashboard/analytics" 
-              className="flex items-center justify-center gap-2 p-2 mt-4 text-primary hover:text-primary/90 font-medium rounded-md hover:bg-muted transition-all"
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              Admin Dashboard <HiArrowLongRight className="h-5 w-5" />
-            </Link>
-          )}
+         
         </CardHeader>
         
         {showDashboard && (

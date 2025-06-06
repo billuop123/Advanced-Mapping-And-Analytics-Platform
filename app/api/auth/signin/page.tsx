@@ -34,7 +34,9 @@ export default function SignIn() {
       if (result?.error) {
         setError("Password and email do not match");
       } else {
-        window.location.href = "/";
+        if(typeof window !== "undefined"){
+          window.location.href = "/";
+        }
       }
     } catch (error) {
       console.error("Sign-in error:", error);

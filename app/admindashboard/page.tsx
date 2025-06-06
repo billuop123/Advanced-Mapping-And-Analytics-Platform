@@ -102,7 +102,9 @@ useEffect(()=>{
   if(!role) return;
   if(role!=="admin")
   {
-  window.location.href="/"
+    if(typeof window !== "undefined"){  
+      window.location.href="/"
+    }
   }
 },[role])
   async function fetchUsers() {

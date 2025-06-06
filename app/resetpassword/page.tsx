@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
-
+import dynamic from "next/dynamic";
+const Loader2 = dynamic(() => import('lucide-react').then(mod => mod.Loader2), { ssr: false });
 export default function ResetPassword(){
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState<string | null>(null);

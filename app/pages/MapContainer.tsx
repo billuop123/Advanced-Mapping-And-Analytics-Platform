@@ -34,17 +34,21 @@ const MapDashboardContainer = () => {
     }
   }, [status, email, router]);
 
-  useEffect(() => {
-    const handlePopState = () => {
-        window.location.reload();  
-    };
+  // useEffect(() => {
+  //   const handlePopState = () => {
+  //     if(typeof window !== "undefined"){
+  //       window.location.reload();  
+  //     }
+  //   };
 
-    window.addEventListener("popstate", handlePopState);
+  //   window.addEventListener("popstate", handlePopState);
 
-    return () => {
-        window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
+  //   return () => {
+  //     if(typeof window !== "undefined"){
+  //       window.removeEventListener("popstate", handlePopState);
+  //     }
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (mapRef.current) {

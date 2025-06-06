@@ -1,4 +1,4 @@
-import { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   images: {
@@ -7,21 +7,44 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      // Add other image hostnames as needed
     ],
   },
+  
+  // Conditional static export (recommended approach)
+  output: process.env.NODE_ENV === 'production' ? 'export' : 'standalone',
+  
+  // Better to fix TypeScript errors than ignore them
   typescript: {
-    // Disable TypeScript build errors
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Changed to false for better code quality
   },
+  
+  // Similarly for ESLint
   eslint: {
-    // Disable ESLint during the build process
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Changed to false for better code quality
   },
+
+  // Enhanced webpack configuration
   webpack: (config, { isServer }) => {
-    // Exclude the problematic file from being processed by Webpack
+    // Client-side specific configurations
+    if (!isServer) {
+      config.resolve = {
+        ...config.resolve,
+        alias: {
+          ...config.resolve?.alias,
+          // Add client-side aliases here if needed
+        },
+        fallback: {
+          ...config.resolve?.fallback,
+          // Add polyfills if needed for client-side
+        }
+      };
+    }
+
+    // Handle HTML files (if absolutely necessary)
     config.module.rules.push({
       test: /\.html$/,
-      loader: "ignore-loader", // Use ignore-loader to skip this file
+      use: 'ignore-loader',
     });
 
     return config;

@@ -53,15 +53,6 @@ export default function MapClient({ ref }: { ref: any }) {
     }
   }, [email]);
 
-  useEffect(() => {
-    if (!sessionStorage.getItem('hasReloaded')) {
-      sessionStorage.setItem('hasReloaded', 'true');
-      window.location.reload();
-    }
-    return () => {
-      sessionStorage.removeItem('hasReloaded');
-    };
-  }, []);
 
   useImperativeHandle(ref, () => ({
     handleResize() {

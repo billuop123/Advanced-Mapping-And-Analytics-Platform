@@ -8,19 +8,21 @@ import { useEffect, useState } from "react";
 export default function NewMapPage() {
   const [shapeCoords, setShapeCoords] = useState(null);
   const [shapeType, setShapeType] = useState("");
-    useEffect(() => {
-        if (!sessionStorage.getItem('hasReloaded')) {
-          sessionStorage.setItem('hasReloaded', 'true');
-          window.location.reload();
-        }
-        return () => {
-          sessionStorage.removeItem('hasReloaded');
-        };
-      }, []);
+    // useEffect(() => {
+    //     if (!sessionStorage.getItem('hasReloaded')) {
+    //       sessionStorage.setItem('hasReloaded', 'true');
+    //       if(typeof window !== "undefined"){
+    //         window.location.reload();
+    //       }
+    //     }
+    //     return () => {
+    //       sessionStorage.removeItem('hasReloaded');
+    //     };
+    //   }, []);
       useEffect(()=>{
         async function fetchShape(){
           try {
-            const shapeId = new URLSearchParams(window.location.search).get('shapeId');
+            const shapeId = new URLSearchParams(typeof window !== undefined ? window.location.search : "").get('shapeId');
             if (!shapeId) {
               console.error('No shape ID provided');
               return;

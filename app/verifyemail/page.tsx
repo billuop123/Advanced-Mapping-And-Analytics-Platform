@@ -11,7 +11,7 @@ export default function VerifyEmailPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
     const urlToken = urlParams.get("token");
     if (urlToken) setToken(urlToken);
   }, []);

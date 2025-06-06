@@ -3,14 +3,17 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { Loader2, Eye, EyeOff } from "lucide-react";
+// import { Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-
+import dynamic from "next/dynamic";
+const Eye = dynamic(() => import('lucide-react').then(mod => mod.Eye), { ssr: false });
+const EyeOff = dynamic(() => import('lucide-react').then(mod => mod.EyeOff), { ssr: false });
+const Loader2 = dynamic(() => import('lucide-react').then(mod => mod.Loader2), { ssr: false });
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -81,14 +84,18 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative">
       {/* Map background image with overlay */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0" 
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/50"></div>
-      </div>
+      <div className="absolute inset-0 z-0">
+  {/* Background image with better SSR support */}
+  <div 
+    className="absolute inset-0 bg-cover bg-center"
+    style={{
+      backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
+    }}
+    aria-hidden="true"
+  />
+  {/* Overlay */}
+  <div className="absolute inset-0 bg-black/50" />
+</div>
 
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white">

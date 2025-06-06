@@ -13,6 +13,8 @@ import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRole } from "../contexts/RoleContext";
+import { HiArrowLongRight } from "react-icons/hi2";
 
 const features = [
   {
@@ -44,6 +46,7 @@ const features = [
 
 export default function LandingPage() {
   const { data: session, status } = useSession();
+  const {role}=useRole()
   const [shapeData, setShapeData] = useState([
     { id: "Circles", value: 0, color: "hsl(120, 70%, 50%)" },
     { id: "Rectangles", value: 0, color: "hsl(240, 70%, 50%)" },
@@ -180,77 +183,77 @@ useEffect(()=>{
 
   if (!session) {
     return (
-      // <div className="min-h-screen bg-background">
-      //   {/* Hero Section */}
-      //   <div className="relative">
-      //     <div 
-      //       className="absolute inset-0 bg-cover bg-center z-0" 
-      //       style={{
-      //         backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
-      //       }}
-      //     >
-      //       <div className="absolute inset-0 bg-black/60"></div>
-      //     </div>
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <div className="relative">
+          <div 
+            className="absolute inset-0 bg-cover bg-center z-0" 
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1474&auto=format&fit=crop')",
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60"></div>
+          </div>
 
-      //     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
-      //       <div className="text-center">
-      //         <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
-      //           <span className="block">Advanced Mapping</span>
-      //           <span className="block text-blue-400">and Analytics Platform</span>
-      //         </h1>
-      //         <p className="mt-6 text-xl text-gray-200 max-w-3xl mx-auto">
-      //           A powerful platform for geographical data visualization, analysis, and management.
-      //           Perfect for businesses and organizations that need to make data-driven decisions.
-      //         </p>
-      //         <div className="mt-10 flex justify-center gap-4">
-      //           <Link href="/api/auth/signin">
-      //             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-      //               Sign In
-      //             </Button>
-      //           </Link>
-      //           <Link href="/api/auth/signup">
-      //             <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20">
-      //               Create Account
-      //             </Button>
-      //           </Link>
-      //         </div>
-      //       </div>
-      //     </div>
-      //   </div>
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
+            <div className="text-center">
+              <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
+                <span className="block">Advanced Mapping</span>
+                <span className="block text-blue-400">and Analytics Platform</span>
+              </h1>
+              <p className="mt-6 text-xl text-gray-200 max-w-3xl mx-auto">
+                A powerful platform for geographical data visualization, analysis, and management.
+                Perfect for businesses and organizations that need to make data-driven decisions.
+              </p>
+              <div className="mt-10 flex justify-center gap-4">
+                <Link href="/api/auth/signin">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/api/auth/signup">
+                  <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20">
+                    Create Account
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      //   {/* Features Section */}
-      //   {/* <div className="py-24 bg-background">
-      //     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      //       <div className="text-center">
-      //         <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
-      //           Platform Features
-      //         </h2>
-      //         <p className="mt-4 text-lg text-muted-foreground">
-      //           Everything you need to manage and analyze your geographical data
-      //         </p>
-      //       </div>
+        {/* Features Section */}
+        <div className="py-24 bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
+                Platform Features
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Everything you need to manage and analyze your geographical data
+              </p>
+            </div>
 
-      //       <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-      //         {features.map((feature, index) => (
-      //           <Card key={index} className="hover:shadow-lg transition-shadow bg-card">
-      //             <CardHeader>
-      //               <div className="flex items-center gap-4">
-      //                 <div className="p-3 bg-blue-100 rounded-lg text-blue-600 dark:bg-blue-400 dark:text-blue-300">
-      //                   {feature.icon}
-      //                 </div>
-      //                 <CardTitle className="text-foreground">{feature.title}</CardTitle>
-      //               </div>
-      //             </CardHeader>
-      //             <CardContent>
-      //               <CardDescription className="text-muted-foreground">{feature.description}</CardDescription>
-      //             </CardContent>
-      //           </Card>
-      //         ))}
-      //       </div>
-      //     </div>
-      //   </div> */}
-      // </div>
-      <div></div>
+            <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow bg-card">
+                  <CardHeader>
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-blue-100 rounded-lg text-blue-600 dark:bg-blue-400 dark:text-blue-300">
+                        {feature.icon}
+                      </div>
+                      <CardTitle className="text-foreground">{feature.title}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-muted-foreground">{feature.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+  
     );
   }
 
@@ -277,7 +280,22 @@ useEffect(()=>{
               Access your maps, analytics, and manage your data.
             </p>
             <div className="mt-10 flex justify-center gap-4">
-              <Link href="/map">
+            
+
+{role === "admin" && (
+  <Link href="/admindashboard/analytics">
+    <Button 
+      size="lg" 
+      variant="outline" 
+      className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+    >
+      <Shield className="h-5 w-5" />
+      Admin Dashboard
+      <HiArrowLongRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+    </Button>
+  </Link>
+)}  
+              <Link href="/map"  target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white dark:text-white">
                   Go to Map
                 </Button>

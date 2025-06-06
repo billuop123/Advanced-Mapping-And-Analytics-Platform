@@ -175,8 +175,8 @@ export const options: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/signin", // Custom sign-in page
-    error: "/auth/error", // Custom error page
+    signIn: "/signin", 
+    error: "/auth/error", 
   },
 };
 
