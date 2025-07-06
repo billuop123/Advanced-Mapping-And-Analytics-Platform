@@ -24,10 +24,9 @@ jobs:
         context: .
         file: ./dockerfile
         push: true
-        tags: billuop/map:latest  # Replace with your Docker Hub username and repository
-
+        tags: billuop/map:latest
     - name: Verify Pushed Image
-      run: docker pull billuop/map:latest  # Replace with your Docker Hub username and repository
+      run: docker pull billuop/map:latest 
 
     # - name: Deploy to EC2
     #   uses: appleboy/ssh-action@master
