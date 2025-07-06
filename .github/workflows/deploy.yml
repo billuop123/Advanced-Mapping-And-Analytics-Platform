@@ -22,7 +22,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: ./docker-compose.yml
+        file: ./dockerfile
         push: true
         tags: billuop/map:latest
     - name: Verify Pushed Image
