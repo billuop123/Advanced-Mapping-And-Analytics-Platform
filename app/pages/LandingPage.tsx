@@ -206,12 +206,12 @@ useEffect(()=>{
                 Perfect for businesses and organizations that need to make data-driven decisions.
               </p>
               <div className="mt-10 flex justify-center gap-4">
-                <Link href="/api/auth/signin">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Link href="/api/signin">
+                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
                     Sign In
                   </Button>
                 </Link>
-                <Link href="/api/auth/signup">
+                <Link href="/api/signup">
                   <Button size="lg" variant="outline" className="bg-white/10 text-white border-white hover:bg-white/20">
                     Create Account
                   </Button>
