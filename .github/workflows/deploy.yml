@@ -37,10 +37,9 @@ jobs:
           sudo docker pull billuop/map:latest
           sudo docker stop web-app || true
           sudo docker rm web-app || true
-          sudo docker run -d --name web-app -p 3005:3000 /billuop/map:latest
+          sudo docker run -d --name web-app -p 3005:3000 billuop/map:latest
 
   
 
 
 
-          
