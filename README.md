@@ -18,7 +18,7 @@
 
 ```bash
     git clone https://github.com/dev-satri/map.git
-    cd beautiful map
+    cd  map
 ```
 
 ## 3. Install Project dependencies
@@ -55,8 +55,8 @@ Make sure you have the following installed:
 
 1. **Clone the Repository:**
 ```bash
-git clone <repository-url>
-cd <project-directory>
+git clone https://github.com/billuop123/Advanced-Mapping-And-Analytics-Platform.git
+cd map
 ```
 
 2. **Environment Variables:**
